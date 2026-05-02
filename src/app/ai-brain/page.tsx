@@ -1,43 +1,31 @@
-'use client'
-
-import { AIBrainPanel } from '@/components/ai-brain-panel'
-import { BrandHeader } from '@/components/brand-header'
-import { SideNav } from '@/components/side-nav'
-import { LearningSignalsPanel } from '@/components/learning-signals-panel'
-import { PrivacyBanner } from '@/components/privacy-banner'
-import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { ModulePage } from '@/components/module-page'
+import { Bot, History, Lightbulb, MessageSquare, Sparkles } from 'lucide-react'
 
 export default function AIBrainPage() {
-  const { data: session, status } = useSession()
-  const router = useRouter()
-
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/auth/signin')
-    }
-  }, [status, router])
-
-  if (status === 'loading' || !session) {
-    return <div className="min-h-screen bg-[#070B10] text-[#EAF2F8] flex items-center justify-center">Loading...</div>
-  }
-
   return (
-    <div className="min-h-screen bg-[#070B10] text-[#EAF2F8]">
-      <div className="flex">
-        <SideNav />
-        <main className="flex-1 px-6 py-8 xl:px-10">
-          <BrandHeader userName={session.user.name ?? 'Operator'} workspaceLabel="AI Brain command layer" />
-          <div className="mt-8 space-y-8">
-            <AIBrainPanel />
-            <div className="grid gap-6 xl:grid-cols-[2fr_1fr]">
-              <PrivacyBanner />
-              <LearningSignalsPanel />
-            </div>
-          </div>
-        </main>
-      </div>
-    </div>
+    <ModulePage
+      title="AI Brain"
+      subtitle="Ask ATLAS, capture decisions, and keep learning signals close."
+      primaryAction="Ask ATLAS"
+      privacy
+      stats={[
+        { label: 'Prompts', value: '6', detail: 'ready', icon: MessageSquare },
+        { label: 'Decisions', value: '4', detail: 'recent', icon: History },
+        { label: 'Signals', value: '9', detail: 'learned', icon: Lightbulb },
+        { label: 'Memory', value: 'On', detail: 'permissioned', icon: Bot },
+        { label: 'Focus', value: '2h', detail: 'suggested', icon: Sparkles },
+      ]}
+      sections={[
+        { title: 'Ask ATLAS', items: ['What needs my attention today?', 'Draft a reply to the contract revision.', 'Summarise the finance approvals.'], action: 'Start prompt' },
+        { title: 'Suggested Prompts', items: ['Plan the next three moves for ABC Corp.', 'Find anything blocked by me.', 'Prepare a short meeting brief.'], action: 'Use prompt' },
+        { title: 'Recent Decisions', items: ['Moved invoice follow-up to today.', 'Kept AI Assistant included for all team members.', 'Marked private calendar as owner-only.'], action: 'View log' },
+        { title: 'Learning Signals', items: ['Morning decisions are faster.', 'Contract work needs focused blocks.', 'Finance approval copy should stay concise.'], action: 'Apply signal' },
+      ]}
+      quickSetup={[
+        { title: 'Ask a question', description: 'Start with one clear decision or summary.', action: 'Ask', icon: MessageSquare },
+        { title: 'Save decision', description: 'Keep a short record of what changed.', action: 'Save', icon: History },
+        { title: 'Review signals', description: 'Accept only useful learning patterns.', action: 'Review', icon: Lightbulb },
+      ]}
+    />
   )
 }
