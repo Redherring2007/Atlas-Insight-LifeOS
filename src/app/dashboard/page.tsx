@@ -1,9 +1,11 @@
+import Link from 'next/link'
+import { ActionRunner } from '@/components/action-runner'
 import { AppShell } from '@/components/app-shell'
 import { PageHeader } from '@/components/page-header'
 import { QuickActionCard } from '@/components/quick-action-card'
 import { SimpleCard } from '@/components/simple-card'
 import { StatCard } from '@/components/stat-card'
-import { Bot, CalendarDays, CircleDollarSign, Lightbulb, Plus, CheckSquare, SunMedium } from 'lucide-react'
+import { Bot, CalendarDays, CircleDollarSign, CheckSquare, SunMedium } from 'lucide-react'
 
 export default function DashboardPage() {
   return (
@@ -12,7 +14,7 @@ export default function DashboardPage() {
         <PageHeader
           title="Dashboard"
           subtitle="Your life and business command centre."
-          action={<button className="inline-flex items-center gap-2 rounded-md bg-[#D7B56D] px-4 py-2.5 text-sm font-semibold text-[#070A0F] transition hover:bg-[#E4C67F]"><Plus size={16} />New Command</button>}
+          action={<ActionRunner module="Dashboard" label="New Command" variant="primary" />}
         />
 
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
@@ -30,7 +32,7 @@ export default function DashboardPage() {
                 <div key={item} className="rounded-lg border border-white/8 bg-white/[0.025] p-3 text-sm text-[#DCE7F1]">{item}</div>
               ))}
             </div>
-            <button className="mt-4 rounded-md border border-white/10 px-3 py-2 text-sm text-[#DCE7F1] transition hover:bg-white/[0.05]">Open Tasks</button>
+            <Link href="/tasks" className="mt-4 inline-flex rounded-md border border-white/10 px-3 py-2 text-sm text-[#DCE7F1] transition hover:bg-white/[0.05]">Open Tasks</Link>
           </SimpleCard>
 
           <SimpleCard title="Critical Alerts">
@@ -39,15 +41,15 @@ export default function DashboardPage() {
                 <div key={item} className="rounded-lg border border-white/8 bg-white/[0.025] p-3 text-sm text-[#DCE7F1]">{item}</div>
               ))}
             </div>
-            <button className="mt-4 rounded-md border border-white/10 px-3 py-2 text-sm text-[#DCE7F1] transition hover:bg-white/[0.05]">Review Alerts</button>
+            <ActionRunner module="Dashboard" label="Review Alerts" intent="Critical Alerts" />
           </SimpleCard>
 
           <SimpleCard title="Quick Actions">
             <div className="grid gap-3 sm:grid-cols-2">
-              <QuickActionCard title="Create task" description="Capture the next action and owner." action="Add task" icon={CheckSquare} />
-              <QuickActionCard title="Ask ATLAS" description="Get a short answer or decision draft." action="Ask now" icon={Bot} />
-              <QuickActionCard title="Add event" description="Block time before the day fills up." action="Schedule" icon={CalendarDays} />
-              <QuickActionCard title="Review payment" description="Approve or hold pending finance actions." action="Review" icon={CircleDollarSign} />
+              <QuickActionCard module="Tasks" title="Create task" description="Capture the next action and owner." action="Add task" icon={CheckSquare} />
+              <QuickActionCard module="AI Brain" title="Ask ATLAS" description="Get a short answer or decision draft." action="Ask now" icon={Bot} />
+              <QuickActionCard module="Calendar" title="Add event" description="Block time before the day fills up." action="Schedule" icon={CalendarDays} />
+              <QuickActionCard module="Finance" title="Review payment" description="Approve or hold pending finance actions." action="Review" icon={CircleDollarSign} />
             </div>
           </SimpleCard>
 
@@ -57,7 +59,7 @@ export default function DashboardPage() {
                 <div key={item} className="rounded-lg border border-white/8 bg-white/[0.025] p-3 text-sm text-[#DCE7F1]">{item}</div>
               ))}
             </div>
-            <button className="mt-4 inline-flex items-center gap-2 rounded-md border border-white/10 px-3 py-2 text-sm text-[#DCE7F1] transition hover:bg-white/[0.05]"><Lightbulb size={15} />Use Signal</button>
+            <ActionRunner module="AI Brain" label="Use Signal" intent="Learning Signals" />
           </SimpleCard>
         </div>
       </div>
