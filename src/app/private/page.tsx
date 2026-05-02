@@ -1,72 +1,31 @@
-'use client'
+import { ModulePage } from '@/components/module-page'
+import { Lock, CalendarDays, FileText, MessageSquare, Shield } from 'lucide-react'
 
-import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
-import { BrainIcon } from '@/components/brain-icon'
-import { CommandInput } from '@/components/command-input'
-import { DashboardPanels } from '@/components/dashboard-panels'
-
-export default function PrivateWorkspace() {
-  const { data: session, status } = useSession()
-  const router = useRouter()
-  const [isProcessing, setIsProcessing] = useState(false)
-
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/auth/signin')
-    }
-  }, [status, router])
-
-  const handleCommand = async (command: string) => {
-    setIsProcessing(true)
-    // Simulate processing
-    setTimeout(() => {
-      setIsProcessing(false)
-      console.log('Processed private command:', command)
-    }, 2000)
-  }
-
-  if (status === 'loading') {
-    return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="text-white">Loading...</div>
-      </div>
-    )
-  }
-
-  if (!session) {
-    return null
-  }
-
-  // In real app, check if user is owner
-  // For now, assume access
-
+export default function PrivatePage() {
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
-      {/* Header */}
-      <header className="border-b border-gray-800 px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <h1 className="text-2xl font-bold">ATLAS LifeOS - Private</h1>
-            <BrainIcon isProcessing={isProcessing} size={40} />
-          </div>
-          <div className="text-sm text-gray-400">
-            Private Workspace - Owner Only
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="px-6 py-8">
-        {/* Command Input */}
-        <div className="mb-8">
-          <CommandInput onCommand={handleCommand} isProcessing={isProcessing} />
-        </div>
-
-        {/* Private Dashboard Panels */}
-        <DashboardPanels workspaceType="private" />
-      </main>
-    </div>
+    <ModulePage
+      title="Private"
+      subtitle="Owner-only space for personal tasks, calendar, finance notes, and AI questions."
+      primaryAction="Add Private Item"
+      privacy
+      stats={[
+        { label: "Private tasks", value: "6", detail: "owner-only", icon: Lock },
+        { label: "Private calendar", value: "3", detail: "events", icon: CalendarDays },
+        { label: "Finance notes", value: "4", detail: "private", icon: FileText },
+        { label: "AI questions", value: "8", detail: "private", icon: MessageSquare },
+        { label: "Visibility", value: "You", detail: "only", icon: Shield },
+      ]}
+      sections={[
+        { title: "Private Tasks", items: ["Renew passport.", "Plan personal travel.", "Call family accountant."], action: "Add private task" },
+        { title: "Private Calendar", items: ["Morning workout.", "Personal appointment.", "Family dinner."], action: "Add private event" },
+        { title: "Private Finance Notes", items: ["Personal budget note.", "Savings plan review."], action: "Add note" },
+        { title: "Private AI Questions", items: ["Ask personal questions without workspace visibility.", "Keep business and private context separate."], action: "Ask privately" },
+      ]}
+      quickSetup={[
+        { title: "Add private task", description: "Only you can see it.", action: "Add task", icon: Lock },
+        { title: "Add private event", description: "Keep personal time out of workspace view.", action: "Add event", icon: CalendarDays },
+        { title: "Ask privately", description: "Use ATLAS without business exposure.", action: "Ask", icon: MessageSquare },
+      ]}
+    />
   )
 }

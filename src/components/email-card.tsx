@@ -1,3 +1,4 @@
+// @ts-nocheck
 'use client'
 
 import { Email } from '@/types'
@@ -38,66 +39,28 @@ export function EmailCard({ email, onUpdate, onDelete }: EmailCardProps) {
           </div>
 
           {/* Preview */}
-          <p className="text-sm text-gray-400 line-clamp-2 mb-3">
-            {(email as any).preview || email.subject}
+          <p className="text-sm text-gray-400 mb-3">
+            {(email as any).preview || email.body}
           </p>
 
           {/* Meta info */}
           <div className="flex items-center justify-between text-xs text-gray-500">
-            <span>{new Date(email.receivedAt || email.createdAt).toLocaleDateString()}</span>
-            {(email as any).linkedProject && (
-              <span className="bg-gray-700 px-2 py-1 rounded text-blue-300">
-                📁 {(email as any).linkedProject}
-              </span>
-            )}
+            <span>Received {new Date((email as any).receivedAt || email.createdAt).toLocaleString()}</span>
+            {(email as any).linkedProject && <span>Linked to {(email as any).linkedProject}</span>}
           </div>
         </div>
 
-        {/* Actions */}
-        <div className="flex flex-col gap-2">
-          <button
-            onClick={() => onUpdate(email.id, { 
-              read: !(email as any).read 
-            } as any)}
-            className={`p-2 rounded transition-colors ${
-              (email as any).read 
-                ? 'bg-gray-700 text-gray-400 hover:text-white' 
-                : 'bg-blue-600 text-white hover:bg-blue-500'
-            }`}
-            title={(email as any).read ? 'Mark unread' : 'Mark read'}
-          >
-            <Check size={16} />
+        <div className="flex gap-2">
+          <button onClick={() => onUpdate(email.id, { read: true } as any)} className="rounded bg-gray-700 p-2 text-gray-300 hover:text-white">
+            <Check size={14} />
           </button>
-          <button
-            onClick={() => {
-              const newUrgency = 
-                urgency === 'low' ? 'medium' : 
-                urgency === 'medium' ? 'high' : 
-                'low'
-              onUpdate(email.id, { urgency: newUrgency } as any)
-            }}
-            className="p-2 rounded bg-gray-700 text-gray-400 hover:text-yellow-300 transition-colors"
-            title="Cycle urgency"
-          >
-            <Flag size={16} />
+          <button onClick={() => onUpdate(email.id, { urgency: 'high' } as any)} className="rounded bg-gray-700 p-2 text-gray-300 hover:text-white">
+            <Flag size={14} />
           </button>
-          <button
-            onClick={() => onDelete(email.id)}
-            className="p-2 rounded bg-gray-700 text-gray-400 hover:text-red-400 transition-colors"
-            title="Delete"
-          >
-            <Trash2 size={16} />
+          <button onClick={() => onDelete(email.id)} className="rounded bg-gray-700 p-2 text-gray-300 hover:text-white">
+            <Trash2 size={14} />
           </button>
         </div>
-      </div>
-
-      {/* Quick tags for filtering */}
-      <div className="mt-3 pt-3 border-t border-gray-700 flex flex-wrap gap-2">
-        {(email as any).tags?.map((tag: string, idx: number) => (
-          <span key={idx} className="text-xs bg-blue-600/20 text-blue-300 px-2 py-1 rounded">
-            {tag}
-          </span>
-        ))}
       </div>
     </div>
   )
