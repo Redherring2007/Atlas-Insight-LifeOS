@@ -5,6 +5,7 @@ import { QuickActionCard } from '@/components/quick-action-card'
 import { SimpleCard } from '@/components/simple-card'
 import { StatCard } from '@/components/stat-card'
 import { PrivacyNote } from '@/components/privacy-note'
+import { ActionRunner } from '@/components/action-runner'
 
 export interface ModuleSection {
   title: string
@@ -29,7 +30,7 @@ export function ModulePage({ title, subtitle, primaryAction, stats, sections, qu
         <PageHeader
           title={title}
           subtitle={subtitle}
-          action={<button className="rounded-md bg-[#D7B56D] px-4 py-2.5 text-sm font-semibold text-[#070A0F] transition hover:bg-[#E4C67F]">{primaryAction}</button>}
+          action={<ActionRunner module={title} label={primaryAction} variant="primary" />}
         />
 
         {privacy ? <PrivacyNote /> : null}
@@ -52,9 +53,7 @@ export function ModulePage({ title, subtitle, primaryAction, stats, sections, qu
                 ))}
               </div>
               {section.action ? (
-                <button className="mt-4 rounded-md border border-white/10 px-3 py-2 text-sm text-[#DCE7F1] transition hover:bg-white/[0.05]">
-                  {section.action}
-                </button>
+                <ActionRunner module={title} label={section.action} intent={section.title} />
               ) : null}
             </SimpleCard>
           ))}
@@ -63,7 +62,7 @@ export function ModulePage({ title, subtitle, primaryAction, stats, sections, qu
         <SimpleCard title="Start here">
           <div className="grid gap-3 md:grid-cols-3">
             {quickSetup.map((item) => (
-              <QuickActionCard key={item.title} {...item} />
+              <QuickActionCard key={item.title} module={title} {...item} />
             ))}
           </div>
         </SimpleCard>
