@@ -1,114 +1,66 @@
-'use client'
+import { AppShell } from '@/components/app-shell'
+import { PageHeader } from '@/components/page-header'
+import { QuickActionCard } from '@/components/quick-action-card'
+import { SimpleCard } from '@/components/simple-card'
+import { StatCard } from '@/components/stat-card'
+import { Bot, CalendarDays, CircleDollarSign, Lightbulb, Plus, CheckSquare, SunMedium } from 'lucide-react'
 
-import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
-import { BrandHeader } from '@/components/brand-header'
-import { SideNav } from '@/components/side-nav'
-import { CommandBrief } from '@/components/command-brief'
-import { DashboardPanels } from '@/components/dashboard-panels'
-import { ModuleCard } from '@/components/module-card'
-import { WorkspaceSelector } from '@/components/workspace-selector'
-import { Workspace } from '@/types'
-
-export default function Dashboard() {
-  const { data: session, status } = useSession()
-  const router = useRouter()
-  const [currentWorkspace, setCurrentWorkspace] = useState<Workspace | null>(null)
-  const [workspaces, setWorkspaces] = useState<Workspace[]>([])
-
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/auth/signin')
-    }
-  }, [status, router])
-
-  useEffect(() => {
-    if (session?.user) {
-      const mockWorkspaces: Workspace[] = [
-        {
-          id: '1',
-          name: 'Business Workspace',
-          ownerId: 'user-1',
-          type: 'business',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-        {
-          id: '2',
-          name: 'Private Life',
-          ownerId: 'user-1',
-          type: 'private',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-      ]
-      setWorkspaces(mockWorkspaces)
-      setCurrentWorkspace(mockWorkspaces[0])
-    }
-  }, [session])
-
-  const handleWorkspaceChange = (workspace: Workspace) => {
-    setCurrentWorkspace(workspace)
-  }
-
-  if (status === 'loading') {
-    return (
-      <div className="min-h-screen bg-[#070B10] flex items-center justify-center text-white">
-        Loading ATLAS...
-      </div>
-    )
-  }
-
-  if (!session) {
-    return null
-  }
-
-  const userName = session.user?.name ?? 'Operator'
-
+export default function DashboardPage() {
   return (
-    <div className="min-h-screen flex bg-[#070B10] text-[#EAF2F8]">
-      <SideNav />
+    <AppShell>
+      <div className="space-y-6">
+        <PageHeader
+          title="Dashboard"
+          subtitle="Your life and business command centre."
+          action={<button className="inline-flex items-center gap-2 rounded-md bg-[#D7B56D] px-4 py-2.5 text-sm font-semibold text-[#070A0F] transition hover:bg-[#E4C67F]"><Plus size={16} />New Command</button>}
+        />
 
-      <main className="flex-1 px-6 py-6 lg:px-10">
-        <BrandHeader userName={userName} workspaceLabel="Premium command centre" />
-
-        <div className="mt-6 grid gap-6 lg:grid-cols-[1.45fr_0.55fr]">
-          <div className="space-y-6">
-            <div className="rounded-3xl border border-white/10 bg-[#111821]/90 p-5">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-                <div>
-                  <p className="text-xs uppercase tracking-[0.3em] text-[#8FA3B8]">Workspace</p>
-                  <h2 className="mt-2 text-2xl font-semibold text-white">{currentWorkspace?.name ?? 'Business Workspace'}</h2>
-                </div>
-                <span className="text-sm text-[#8FA3B8]">{currentWorkspace?.type === 'private' ? 'Private' : 'Business'}</span>
-              </div>
-
-              <div className="mt-4">
-                <WorkspaceSelector workspaces={workspaces} currentWorkspace={currentWorkspace} onWorkspaceChange={handleWorkspaceChange} />
-              </div>
-            </div>
-
-            <div className="rounded-3xl border border-white/10 bg-[#111821]/90 p-5">
-              <div className="flex items-center justify-between">
-                <h3 className="text-base font-semibold text-white">Quick links</h3>
-                <span className="text-sm text-[#8FA3B8]">One click</span>
-              </div>
-              <div className="mt-4 grid gap-3">
-                <ModuleCard title="AI Brain" description="Open the brain layer and make decisions faster." href="/brain" />
-                <ModuleCard title="Tasks" description="Jump straight into task planning and daily work." href="/tasks" />
-                <ModuleCard title="Calendar" description="See your schedule and next appointments." href="/calendar" />
-                <ModuleCard title="Finance" description="Review budgets, approvals, and cash flow." href="/finance" />
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-6">
-            <CommandBrief />
-            <DashboardPanels workspaceType={currentWorkspace?.type === 'private' ? 'private' : 'business'} />
-          </div>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+          <StatCard label="Today" value="4" detail="priorities" icon={SunMedium} />
+          <StatCard label="Tasks" value="12" detail="3 due soon" icon={CheckSquare} />
+          <StatCard label="Calendar" value="3" detail="meetings" icon={CalendarDays} />
+          <StatCard label="Finance" value="2" detail="approvals" icon={CircleDollarSign} />
+          <StatCard label="AI Brain" value="5" detail="signals" icon={Bot} />
         </div>
-      </main>
-    </div>
+
+        <div className="grid gap-4 lg:grid-cols-2">
+          <SimpleCard title="Today's Priorities">
+            <div className="space-y-3">
+              {['Review the ABC Corp contract before 2 PM.', 'Send the overdue invoice follow-up.', 'Confirm Sarah has what she needs for client prep.'].map((item) => (
+                <div key={item} className="rounded-lg border border-white/8 bg-white/[0.025] p-3 text-sm text-[#DCE7F1]">{item}</div>
+              ))}
+            </div>
+            <button className="mt-4 rounded-md border border-white/10 px-3 py-2 text-sm text-[#DCE7F1] transition hover:bg-white/[0.05]">Open Tasks</button>
+          </SimpleCard>
+
+          <SimpleCard title="Critical Alerts">
+            <div className="space-y-3">
+              {['One invoice is overdue by 5 days.', 'A contract revision needs approval.', 'Tomorrow has one calendar conflict.'].map((item) => (
+                <div key={item} className="rounded-lg border border-white/8 bg-white/[0.025] p-3 text-sm text-[#DCE7F1]">{item}</div>
+              ))}
+            </div>
+            <button className="mt-4 rounded-md border border-white/10 px-3 py-2 text-sm text-[#DCE7F1] transition hover:bg-white/[0.05]">Review Alerts</button>
+          </SimpleCard>
+
+          <SimpleCard title="Quick Actions">
+            <div className="grid gap-3 sm:grid-cols-2">
+              <QuickActionCard title="Create task" description="Capture the next action and owner." action="Add task" icon={CheckSquare} />
+              <QuickActionCard title="Ask ATLAS" description="Get a short answer or decision draft." action="Ask now" icon={Bot} />
+              <QuickActionCard title="Add event" description="Block time before the day fills up." action="Schedule" icon={CalendarDays} />
+              <QuickActionCard title="Review payment" description="Approve or hold pending finance actions." action="Review" icon={CircleDollarSign} />
+            </div>
+          </SimpleCard>
+
+          <SimpleCard title="Learning Signals">
+            <div className="space-y-3">
+              {['Best focus window today is 10:00 to 12:00.', 'Finance approvals usually wait until late afternoon.', 'Client replies are faster when sent before lunch.'].map((item) => (
+                <div key={item} className="rounded-lg border border-white/8 bg-white/[0.025] p-3 text-sm text-[#DCE7F1]">{item}</div>
+              ))}
+            </div>
+            <button className="mt-4 inline-flex items-center gap-2 rounded-md border border-white/10 px-3 py-2 text-sm text-[#DCE7F1] transition hover:bg-white/[0.05]"><Lightbulb size={15} />Use Signal</button>
+          </SimpleCard>
+        </div>
+      </div>
+    </AppShell>
   )
 }

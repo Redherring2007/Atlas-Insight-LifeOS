@@ -1,88 +1,30 @@
-'use client'
-
-import { BrandHeader } from '@/components/brand-header'
-import { SideNav } from '@/components/side-nav'
-import { ConnectedSystemCard } from '@/components/connected-system-card'
-import { PrivacyBanner } from '@/components/privacy-banner'
-import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
-
-const systems = [
-  {
-    id: 'atlas-insight',
-    name: 'ATLAS Insight',
-    category: 'Intelligence / OSINT / risk signals',
-    status: 'connected',
-    description: 'External module for signals, risk scoring, and intelligence that feeds the command layer.'
-  },
-  {
-    id: 'sargassum',
-    name: 'Sargassum System',
-    category: 'Environmental tracking / routing',
-    status: 'available',
-    description: 'Connect tracking and routing data to build smarter operational choices.'
-  },
-  {
-    id: 'trading-bot',
-    name: 'Trading Bot',
-    category: 'Finance / signal intelligence',
-    status: 'available',
-    description: 'Link trading signals and finance insights while keeping control in ATLAS.'
-  },
-  {
-    id: 'future-products',
-    name: 'Future Products',
-    category: 'Plugin-ready ecosystem',
-    status: 'disabled',
-    description: 'Add future integrations without changing the core command hub.'
-  },
-]
+import { ModulePage } from '@/components/module-page'
+import { Network, Waves, LineChart, Blocks, Shield } from 'lucide-react'
 
 export default function ConnectedSystemsPage() {
-  const { data: session, status } = useSession()
-  const router = useRouter()
-
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/auth/signin')
-    }
-  }, [status, router])
-
-  if (status === 'loading' || !session) {
-    return <div className="min-h-screen bg-[#070B10] text-[#EAF2F8] flex items-center justify-center">Loading...</div>
-  }
-
   return (
-    <div className="min-h-screen bg-[#070B10] text-[#EAF2F8]">
-      <div className="flex">
-        <SideNav />
-        <main className="flex-1 px-6 py-8 xl:px-10">
-          <BrandHeader userName={session.user.name ?? 'Operator'} workspaceLabel="Connected systems hub" />
-          <div className="mt-8 grid gap-8 xl:grid-cols-[1.5fr_0.9fr]">
-            <section className="space-y-6">
-              <div className="rounded-3xl border border-white/10 bg-[#121C28]/80 p-6 shadow-[0_30px_80px_rgba(0,0,0,0.25)] backdrop-blur-xl">
-                <p className="text-xs uppercase tracking-[0.3em] text-[#00D9FF]">Connected Systems</p>
-                <h2 className="mt-2 text-3xl font-semibold text-[#EAF2F8]">All systems work independently. Together, they become stronger.</h2>
-                <p className="mt-3 text-sm leading-6 text-[#8FA3B8]">ATLAS Life OS is the central command layer. Connected modules bring added intelligence without changing the independent behaviour of each system.</p>
-              </div>
-              <div className="grid gap-6 lg:grid-cols-2">
-                {systems.map((system) => (
-                  <ConnectedSystemCard key={system.id} {...system} />
-                ))}
-              </div>
-            </section>
-            <aside className="space-y-6">
-              <PrivacyBanner />
-              <div className="rounded-3xl border border-white/10 bg-[#121C28]/80 p-6 shadow-[0_30px_80px_rgba(0,0,0,0.25)] backdrop-blur-xl">
-                <p className="text-xs uppercase tracking-[0.3em] text-[#00D9FF]">Integration note</p>
-                <h3 className="mt-3 text-2xl font-semibold text-[#EAF2F8]">The hub stays central</h3>
-                <p className="mt-4 text-sm leading-6 text-[#8FA3B8]">When systems are linked, ATLAS Life OS becomes the command layer for intelligence, finance, calendar, and decisions.</p>
-              </div>
-            </aside>
-          </div>
-        </main>
-      </div>
-    </div>
+    <ModulePage
+      title="Connected Systems"
+      subtitle="Optional connected products that extend ATLAS without becoming main modules."
+      primaryAction="Connect System"
+      stats={[
+        { label: "ATLAS Insight", value: "On", detail: "signals", icon: Network },
+        { label: "Sargassum", value: "Ready", detail: "optional", icon: Waves },
+        { label: "Trading Bot", value: "Ready", detail: "optional", icon: LineChart },
+        { label: "Future Products", value: "Open", detail: "plugin-ready", icon: Blocks },
+        { label: "Core OS", value: "Clean", detail: "unchanged", icon: Shield },
+      ]}
+      sections={[
+        { title: "ATLAS Insight", items: ["External intelligence and risk signals can feed the command layer."], action: "Review link" },
+        { title: "Sargassum System", items: ["Optional environmental tracking and routing connection."], action: "Connect when ready" },
+        { title: "Trading Bot", items: ["Optional finance signal source with approval boundaries."], action: "Review option" },
+        { title: "Future Products", items: ["New products can connect later without cluttering the main app."], action: "Add product" },
+      ]}
+      quickSetup={[
+        { title: "Pick system", description: "Choose only what you actively use.", action: "Choose", icon: Network },
+        { title: "Set scope", description: "Decide what data can flow into ATLAS.", action: "Set scope", icon: Shield },
+        { title: "Connect later", description: "Leave optional systems off until needed.", action: "Save", icon: Blocks },
+      ]}
+    />
   )
 }
