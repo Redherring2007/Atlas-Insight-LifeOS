@@ -46,7 +46,7 @@ const priorityTone: Record<InboxPriority, StatusTone> = {
 const moduleByTag: Record<InboxTag, string> = {
   email: 'Emails',
   task: 'Tasks',
-  approval: 'Finance',
+  approval: 'Automations',
   ai: 'AI Brain',
   finance: 'Finance',
   calendar: 'Calendar',
