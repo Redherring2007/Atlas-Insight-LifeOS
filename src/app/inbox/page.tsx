@@ -6,7 +6,7 @@ import { AppShell } from '@/components/app-shell'
 import { PageHeader } from '@/components/page-header'
 import { SimpleCard } from '@/components/simple-card'
 import { StatusPill, type StatusTone } from '@/components/status-pill'
-import { Archive, Bell, Check, Clock3, Layers3, Sparkles, Zap } from 'lucide-react'
+import { Bell, Check, Clock3, Layers3, Sparkles, Zap } from 'lucide-react'
 
 type InboxTag = 'email' | 'task' | 'approval' | 'ai' | 'finance' | 'calendar' | 'deal' | 'message'
 type InboxGroup = 'Now' | 'Today' | 'Later'
@@ -212,7 +212,7 @@ export default function InboxZeroPage() {
           action={<ActionRunner module="AI Brain" label="Ask Atlas" intent="Inbox Zero command" variant="primary" />}
         />
 
-        <section className="rounded-lg border border-[#D7B56D]/25 bg-[#101821]/92 p-4 shadow-[0_0_55px_rgba(215,181,109,0.10)]">
+        <section className="rounded-lg border border-[#D7B56D]/25 bg-[#101821]/[0.92] p-4 shadow-[0_0_55px_rgba(215,181,109,0.10)]">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-start gap-3">
               <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-[#D7B56D]/25 bg-[#D7B56D]/10 text-[#E7CC8A]">
@@ -229,7 +229,7 @@ export default function InboxZeroPage() {
             </div>
             <div className="grid gap-2 sm:grid-cols-3 lg:w-auto">
               <button type="button" onClick={clearCompleted} className="inline-flex items-center justify-center gap-2 rounded-md border border-white/10 bg-white/[0.035] px-3 py-2 text-sm text-[#DCE7F1] transition hover:bg-white/[0.06]"><Check size={14} />Clear completed</button>
-              <button type="button" onClick={() => setFocusMode((current) => !current)} className={`inline-flex items-center justify-center gap-2 rounded-md border px-3 py-2 text-sm transition ${focusMode ? 'border-[#D7B56D]/35 bg-[#D7B56D]/12 text-[#E7CC8A]' : 'border-white/10 bg-white/[0.035] text-[#DCE7F1] hover:bg-white/[0.06]'}`}><Zap size={14} />Focus mode</button>
+              <button type="button" onClick={() => setFocusMode((current) => !current)} className={`inline-flex items-center justify-center gap-2 rounded-md border px-3 py-2 text-sm transition ${focusMode ? 'border-[#D7B56D]/35 bg-[#D7B56D]/[0.12] text-[#E7CC8A]' : 'border-white/10 bg-white/[0.035] text-[#DCE7F1] hover:bg-white/[0.06]'}`}><Zap size={14} />Focus mode</button>
               <button type="button" onClick={snoozeLowPriority} className="inline-flex items-center justify-center gap-2 rounded-md border border-white/10 bg-white/[0.035] px-3 py-2 text-sm text-[#DCE7F1] transition hover:bg-white/[0.06]"><Clock3 size={14} />Snooze low</button>
             </div>
           </div>
@@ -275,7 +275,7 @@ export default function InboxZeroPage() {
                             </div>
                             <h3 className="mt-3 text-base font-semibold text-white">{item.title}</h3>
                             <p className="mt-1 text-sm leading-6 text-[#8FA3B8]">{item.context}</p>
-                            <div className="mt-3 rounded-md border border-[#4DA3FF]/20 bg-[#4DA3FF]/8 px-3 py-2 text-sm text-[#B8D7FF]">
+                            <div className="mt-3 rounded-md border border-[#4DA3FF]/20 bg-[#4DA3FF]/[0.08] px-3 py-2 text-sm text-[#B8D7FF]">
                               ATLAS recommends this action: {item.suggestedAction}
                             </div>
                             {item.automation ? (
@@ -316,7 +316,7 @@ export default function InboxZeroPage() {
         </div>
 
         <div className="fixed bottom-5 right-5 z-30 hidden md:block">
-          <ActionRunner module="AI Brain" label="Ask Atlas" intent="Inbox Zero floating command" className="inline-flex items-center gap-2 rounded-full border border-[#D7B56D]/30 bg-[#D7B56D]/12 px-4 py-3 text-sm font-semibold text-[#E7CC8A] shadow-[0_0_38px_rgba(215,181,109,0.18)] transition hover:border-[#D7B56D]/45 hover:bg-[#D7B56D]/18">
+          <ActionRunner module="AI Brain" label="Ask Atlas" intent="Inbox Zero floating command" className="inline-flex items-center gap-2 rounded-full border border-[#D7B56D]/30 bg-[#D7B56D]/[0.12] px-4 py-3 text-sm font-semibold text-[#E7CC8A] shadow-[0_0_38px_rgba(215,181,109,0.18)] transition hover:border-[#D7B56D]/45 hover:bg-[#D7B56D]/[0.18]">
             <Bell size={15} />Ask Atlas
           </ActionRunner>
         </div>
