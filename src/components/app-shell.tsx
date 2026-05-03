@@ -1,5 +1,6 @@
 'use client'
 
+import type { LucideIcon } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, type ReactNode } from 'react'
@@ -20,9 +21,19 @@ import {
   CheckSquare,
   Users,
   Workflow,
+  Inbox,
 } from 'lucide-react'
 
-const navItems = [
+type NavItem = {
+  href: string
+  label: string
+  icon: LucideIcon
+  aliases?: string[]
+  tier?: 'primary'
+}
+
+const navItems: NavItem[] = [
+  { href: '/inbox', label: 'Inbox Zero', icon: Inbox, tier: 'primary' },
   { href: '/dashboard', label: 'Dashboard', icon: Home },
   { href: '/ai-brain', label: 'AI Brain', icon: Sparkles, aliases: ['/brain'] },
   { href: '/tasks', label: 'Tasks', icon: CheckSquare },
@@ -83,19 +94,29 @@ export function AppShell({ children }: { children: ReactNode }) {
             {navItems.map((item) => {
               const Icon = item.icon
               const active = isActive(pathname, item.href, item.aliases)
+              const primary = item.tier === 'primary'
 
               return (
                 <Link
                   key={item.href}
                   href={item.href}
                   className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition ${
-                    active
-                      ? 'border border-white/10 bg-white/[0.07] text-white'
-                      : 'text-[#A8B5C3] hover:bg-white/[0.04] hover:text-white'
+                    primary && active
+                      ? 'border border-[#D7B56D]/35 bg-[#D7B56D]/12 text-white shadow-[0_0_28px_rgba(215,181,109,0.16)]'
+                      : primary
+                        ? 'border border-[#D7B56D]/15 bg-[#D7B56D]/7 text-[#E7CC8A] hover:border-[#D7B56D]/25 hover:bg-[#D7B56D]/10'
+                        : active
+                          ? 'border border-white/10 bg-white/[0.07] text-white'
+                          : 'text-[#A8B5C3] hover:bg-white/[0.04] hover:text-white'
                   }`}
                 >
-                  <Icon size={16} className={active ? 'text-[#D7B56D]' : 'text-[#718195]'} />
+                  <Icon size={16} className={active || primary ? 'text-[#D7B56D]' : 'text-[#718195]'} />
                   <span className="truncate">{item.label}</span>
+                  {primary ? (
+                    <span className={`ml-auto rounded-full border px-1.5 py-0.5 text-[10px] font-semibold ${active ? 'border-[#D7B56D]/35 bg-[#D7B56D]/15 text-[#F1DDA4]' : 'border-white/10 bg-white/[0.04] text-[#9AA8B7]'}`}>
+                      7
+                    </span>
+                  ) : null}
                 </Link>
               )
             })}
@@ -115,7 +136,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <div className="flex items-center justify-between">
               <Link href="/dashboard" className="text-sm font-semibold text-white">ATLAS LifeOS</Link>
               <select
-                value={navItems.find((item) => isActive(pathname, item.href, item.aliases))?.href ?? '/dashboard'}
+                value={navItems.find((item) => isActive(pathname, item.href, item.aliases))?.href ?? '/inbox'}
                 onChange={(event) => router.push(event.target.value)}
                 className="max-w-[190px] rounded-lg border border-white/10 bg-[#101821] px-3 py-2 text-sm text-white outline-none"
               >
