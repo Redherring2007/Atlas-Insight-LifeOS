@@ -102,9 +102,9 @@ export function AppShell({ children }: { children: ReactNode }) {
                   href={item.href}
                   className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition ${
                     primary && active
-                      ? 'border border-[#D7B56D]/35 bg-[#D7B56D]/12 text-white shadow-[0_0_28px_rgba(215,181,109,0.16)]'
+                      ? 'border border-[#D7B56D]/35 bg-[#D7B56D]/[0.12] text-white shadow-[0_0_28px_rgba(215,181,109,0.16)]'
                       : primary
-                        ? 'border border-[#D7B56D]/15 bg-[#D7B56D]/7 text-[#E7CC8A] hover:border-[#D7B56D]/25 hover:bg-[#D7B56D]/10'
+                        ? 'border border-[#D7B56D]/15 bg-[#D7B56D]/[0.07] text-[#E7CC8A] hover:border-[#D7B56D]/25 hover:bg-[#D7B56D]/10'
                         : active
                           ? 'border border-white/10 bg-white/[0.07] text-white'
                           : 'text-[#A8B5C3] hover:bg-white/[0.04] hover:text-white'
