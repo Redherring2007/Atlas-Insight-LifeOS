@@ -1,40 +1,43 @@
 # Atlas LifeOS Build State
 
-Stage: LifeOS Shell Simplification
-Date/time: 2026-05-18 13:25 Asia/Dubai
-Branch: architecture/lifeos-shell-simplification
-Status: Shell simplification changes prepared; validation blocked by unavailable local shell.
+Stage: Atlas Brain Integration Foundation
+Date/time: 2026-05-18 15:00 Asia/Dubai
+Branch: feature/atlas-brain-integration-foundation
+Status: Atlas Brain foundation changes prepared on GitHub branch; validation blocked by unavailable local shell.
 
 ## Current Purpose
-Make ATLAS feel simple, clear, premium, and operationally powerful while preserving deeper module architecture underneath.
+Create a clean, safe, future-ready Atlas Brain integration foundation that connects the LifeOS shell to local Ollama model architecture without autonomous execution.
 
 ## Current Status
-- Top-level navigation is now Home, Ask Atlas, Command Queue, Modules, Settings.
-- Home is now a calm operational surface for focus, daily brief, command preview, modules, and strategic signals.
-- Ask Atlas is positioned as the central operational brain and future Atlas Brain entry point.
-- Command Queue exists as the approval/action layer with safe mock actions only.
-- Modules page presents Atlas Projects, CRM, Verify, Risk, Finance, Vault, Connect, and MyLife with clear product positioning.
-- Underlying prototype routes remain available but are no longer exposed as top-level shell navigation.
+- `feature/atlas-brain-integration-foundation` was created from latest `main`.
+- Atlas Brain service structure now exists under `src/lib/ai`.
+- Ollama provider defaults to `atlas-brain` and supports `OLLAMA_BASE_URL` plus `ATLAS_BRAIN_MODEL`.
+- `/api/atlas-brain` accepts controlled modes: `ask`, `daily_brief`, `command_suggestions`, `operational_summary`, and `focus`.
+- Ask Atlas submits prompts to the API, shows loading/live/fallback response state, and keeps suggestions approval-led.
+- Command Queue can request proposed Atlas Brain suggestions while keeping all actions user-controlled.
+- `.env.example` documents local build and Ollama variables.
+- `tsconfig.tsbuildinfo` has been removed from repository tracking and added to `.gitignore`.
 
 ## Current Blockers
-- Local shell execution is unavailable in this environment, so `git status --short`, `npx tsc --noEmit`, and the production build command could not execute.
+- Local shell execution is unavailable in this environment, so `git status --short`, `npx tsc --noEmit`, the production build command, and Ollama smoke testing could not execute.
 
 ## Checks Run
-- Read required architecture, module map, task, status, build log, build state, changelog, and QA docs.
 - Attempted `git status --short`; blocked before shell startup.
 - Attempted `npx tsc --noEmit`; blocked before shell startup.
 - Attempted `DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder" npm run build`; blocked before shell startup.
-- Reviewed final GitHub diff from the branch base.
+- Reviewed branch files through the GitHub connector.
 
 ## Checks Still Required
 - `git status --short`
 - `npx tsc --noEmit`
 - `DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder" npm run build`
+- Local smoke test with Ollama running and `ATLAS_BRAIN_MODEL=atlas-brain`.
 
 ## Known Risks
-- Residual TypeScript/build errors may remain until validation can run in a working environment.
-- Mobile layout was improved with bottom navigation, but visual QA screenshots could not be captured without a running app.
-- Legacy/prototype routes still need later cleanup for consistency, but capability was intentionally preserved.
+- TypeScript or production build issues may remain until validation can run in a working environment.
+- Atlas Brain uses placeholder operational context only.
+- Suggested Command Queue actions are local UI state and do not persist.
+- Ollama availability is intentionally optional; fallback mode should be expected when local Ollama is not reachable.
 
 ## Exact Next Step
-Run the TypeScript and build checks in a working environment; if they pass, continue with a careful Atlas Brain integration layer that keeps all execution approval-led through Command Queue.
+Run TypeScript and production build checks in a working local shell or CI, then smoke test `POST /api/atlas-brain` with Ollama running before any deeper orchestration work begins.
