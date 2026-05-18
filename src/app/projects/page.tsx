@@ -3,7 +3,6 @@
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { BrainIcon } from '@/components/brain-icon'
 import { ProjectCard } from '@/components/project-card'
 import { Project } from '@/types'
 
@@ -85,7 +84,6 @@ export default function ProjectsPage() {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <h1 className="text-2xl font-bold">Projects</h1>
-            <BrainIcon isProcessing={false} size={32} />
           </div>
           <button className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md text-sm font-medium">
             + New Project
