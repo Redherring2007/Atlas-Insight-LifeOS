@@ -7,9 +7,18 @@ interface ProjectCardProps {
   onUpdate: (projectId: string, updates: Partial<Project>) => void
 }
 
+type ProjectStatus = 'active' | 'completed' | 'on-hold'
+
+function normalizeProjectStatus(status: string | null): ProjectStatus {
+  if (status === 'completed' || status === 'on-hold') return status
+  return 'active'
+}
+
 export function ProjectCard({ project, onUpdate }: ProjectCardProps) {
-  const getStatusColor = (status: string) => {
-    switch (status) {
+  const status = normalizeProjectStatus(project.status)
+
+  const getStatusColor = (value: ProjectStatus) => {
+    switch (value) {
       case 'active': return 'bg-green-600'
       case 'completed': return 'bg-blue-600'
       case 'on-hold': return 'bg-yellow-600'
@@ -17,8 +26,8 @@ export function ProjectCard({ project, onUpdate }: ProjectCardProps) {
     }
   }
 
-  const handleStatusChange = (newStatus: string) => {
-    onUpdate(project.id, { status: newStatus as any })
+  const handleStatusChange = (newStatus: ProjectStatus) => {
+    onUpdate(project.id, { status: newStatus })
   }
 
   return (
@@ -30,13 +39,13 @@ export function ProjectCard({ project, onUpdate }: ProjectCardProps) {
             <p className="text-gray-400 text-sm mb-3">{project.description}</p>
           )}
           <div className="flex items-center space-x-2">
-            <div className={`w-2 h-2 rounded-full ${getStatusColor(project.status)}`}></div>
-            <span className="text-sm text-gray-400 capitalize">{project.status}</span>
+            <div className={`w-2 h-2 rounded-full ${getStatusColor(status)}`}></div>
+            <span className="text-sm text-gray-400 capitalize">{status}</span>
           </div>
         </div>
         <select
-          value={project.status}
-          onChange={(e) => handleStatusChange(e.target.value)}
+          value={status}
+          onChange={(e) => handleStatusChange(e.target.value as ProjectStatus)}
           className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-xs text-white"
         >
           <option value="active">Active</option>
@@ -45,7 +54,6 @@ export function ProjectCard({ project, onUpdate }: ProjectCardProps) {
         </select>
       </div>
 
-      {/* Project stats */}
       <div className="grid grid-cols-3 gap-4 mb-4">
         <div className="text-center">
           <div className="text-xl font-bold text-blue-400">12</div>
@@ -61,7 +69,6 @@ export function ProjectCard({ project, onUpdate }: ProjectCardProps) {
         </div>
       </div>
 
-      {/* Progress bar */}
       <div className="mb-4">
         <div className="flex justify-between text-sm text-gray-400 mb-1">
           <span>Progress</span>
@@ -72,7 +79,6 @@ export function ProjectCard({ project, onUpdate }: ProjectCardProps) {
         </div>
       </div>
 
-      {/* Action buttons */}
       <div className="flex space-x-2">
         <button className="text-blue-400 hover:text-blue-300 text-sm">
           View Details
