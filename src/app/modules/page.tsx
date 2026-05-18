@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
-import { ArrowRight, BriefcaseBusiness, Contact, FileCheck2, Landmark, LifeBuoy, Link2, ShieldCheck, Vault } from 'lucide-react'
+import { ArrowRight, BriefcaseBusiness, FileCheck2, Landmark, LifeBuoy, Link2, ShieldCheck, Users, Vault } from 'lucide-react'
 import { BrandHeader } from '@/components/brand-header'
 import { SideNav } from '@/components/side-nav'
 
@@ -27,7 +27,7 @@ const modules = [
     status: 'Active' as ModuleStatus,
     href: '/contacts',
     cta: 'Open module',
-    icon: Contact,
+    icon: Users,
   },
   {
     name: 'Atlas Verify',
