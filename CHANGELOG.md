@@ -1,5 +1,16 @@
 # Changelog
 
+## 2026-05-18 - Google OAuth Live Read-Only Connection
+- Added connected account persistence migration plan for encrypted provider tokens and operational signal summaries.
+- Added Drizzle schema entries for `connected_accounts` and `connected_account_signals`.
+- Added token encryption helpers using `ATLAS_TOKEN_ENCRYPTION_KEY`; missing key prevents live token persistence.
+- Added signed OAuth state helpers bound to provider, user id, nonce, and expiry.
+- Updated Google OAuth start/callback flow to use signed state, validate session user match, exchange code, fetch Google profile, and store encrypted tokens server-side.
+- Updated Google health route to report token encryption readiness and stored Google account previews.
+- Updated Google signals route to sync read-only Gmail/Calendar signals from a stored connected account id or fall back safely to mock signals.
+- Updated `/connect` with live readiness, callback status, connected account preview, signal sync preview, and disconnect/revoke placeholder.
+- Preserved safety boundaries: read-only scopes only, no token logging, no raw token response, no full email body storage, no attachment downloads, no email/calendar mutations, and no autonomous execution.
+
 ## 2026-05-18 - Google Workspace Read-Only Adapter Foundation
 - Added provider-specific Google Workspace adapter foundation under `src/lib/connectors/google`.
 - Added read-only Google OAuth helpers for auth URL generation, code exchange, refresh, scope configuration, and scope safety checks.
