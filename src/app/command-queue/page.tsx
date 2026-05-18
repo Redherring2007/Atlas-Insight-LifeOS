@@ -44,10 +44,10 @@ const initialQueue: QueueItem[] = [
   },
   {
     id: 'travel-risk-brief',
-    title: 'Confirm travel risk brief',
+    title: 'Confirm resilience brief',
     source: 'Atlas Risk',
-    reason: 'A planned trip has schedule and disruption context ready for review.',
-    impact: 'Keeps planning calm and practical.',
+    reason: 'A planning change has continuity and schedule context ready for review.',
+    impact: 'Keeps operational risk visible without creating noise.',
     icon: 'risk',
     status: 'pending',
   },
@@ -106,7 +106,7 @@ function queueItemFromSuggestion(action: AtlasSuggestedAction, index: number): Q
     title: action.title,
     source: action.source,
     reason: action.rationale,
-    impact: 'Proposed by Atlas Brain for review only. No external action has been taken.',
+    impact: 'Proposed by Atlas Brain from structured context. No external action has been taken.',
     icon: iconForActionType(action.type),
     status: 'pending',
     proposed: true,
@@ -119,6 +119,7 @@ export default function CommandQueuePage() {
   const [items, setItems] = useState<QueueItem[]>(initialQueue)
   const [isSuggesting, setIsSuggesting] = useState(false)
   const [suggestionMessage, setSuggestionMessage] = useState('')
+  const [contextSignals, setContextSignals] = useState<string[]>([])
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -148,7 +149,7 @@ export default function CommandQueuePage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           mode: 'command_suggestions',
-          message: 'Suggest safe Command Queue actions for review.',
+          message: 'Suggest safe Command Queue actions from current operational context.',
         }),
       })
 
@@ -160,7 +161,8 @@ export default function CommandQueuePage() {
       const proposedItems = data.suggestedActions.map(queueItemFromSuggestion)
 
       setItems((current) => [...proposedItems, ...current])
-      setSuggestionMessage(data.metadata.provider === 'ollama' ? 'Atlas Brain proposed actions for review.' : 'Fallback suggestions added for review only.')
+      setContextSignals(data.contextSnapshot.signals.slice(0, 3))
+      setSuggestionMessage(data.metadata.provider === 'ollama' ? 'Atlas Brain proposed context-aware actions for review.' : 'Fallback context suggestions added for review only.')
     } catch (error) {
       setSuggestionMessage(error instanceof Error ? error.message : 'Atlas Brain suggestions are unavailable.')
     } finally {
@@ -180,7 +182,7 @@ export default function CommandQueuePage() {
               <p className="text-xs uppercase tracking-[0.3em] text-[#00D9FF]">Approval Layer</p>
               <h2 className="mt-3 text-3xl font-semibold text-white">Nothing important happens invisibly.</h2>
               <p className="mt-4 max-w-2xl text-sm leading-6 text-[#B0C9E0]">
-                Atlas prepares the next useful action, then waits here for approval, editing, snoozing, or dismissal.
+                Atlas prepares the next useful action from structured context, then waits here for approval, editing, snoozing, or dismissal.
               </p>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -201,6 +203,13 @@ export default function CommandQueuePage() {
           </div>
           {suggestionMessage && (
             <p className="mt-4 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-[#B0C9E0]">{suggestionMessage}</p>
+          )}
+          {contextSignals.length > 0 && (
+            <div className="mt-4 grid gap-3 md:grid-cols-3">
+              {contextSignals.map((signal) => (
+                <p key={signal} className="rounded-2xl border border-white/10 bg-[#0D1520] px-4 py-3 text-sm leading-6 text-[#B0C9E0]">{signal}</p>
+              ))}
+            </div>
           )}
         </section>
 
