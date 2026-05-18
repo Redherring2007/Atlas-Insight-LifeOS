@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
-import { atlasBrainModes, buildMockOperationalContext, runAtlasBrain } from '@/lib/ai/atlas-brain'
+import { atlasBrainModes, runAtlasBrain } from '@/lib/ai/atlas-brain'
+import { buildOperationalSnapshot, buildOperationalState } from '@/lib/context/operational-state'
 import type { AtlasBrainMode } from '@/lib/ai/types'
 
 function isAtlasBrainMode(value: unknown): value is AtlasBrainMode {
@@ -7,6 +8,8 @@ function isAtlasBrainMode(value: unknown): value is AtlasBrainMode {
 }
 
 export async function POST(request: Request) {
+  const context = buildOperationalState()
+
   try {
     const body = await request.json().catch(() => ({})) as Record<string, unknown>
     const mode = isAtlasBrainMode(body.mode) ? body.mode : 'ask'
@@ -15,7 +18,7 @@ export async function POST(request: Request) {
     const response = await runAtlasBrain({
       mode,
       message,
-      context: buildMockOperationalContext(),
+      context,
     })
 
     return NextResponse.json(response)
@@ -23,6 +26,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       text: 'Atlas Brain fallback mode is active. The request could not be completed live, but no external action was taken.',
       suggestedActions: [],
+      contextSnapshot: buildOperationalSnapshot(context),
       metadata: {
         provider: 'fallback',
         model: process.env.ATLAS_BRAIN_MODEL ?? 'atlas-brain',
