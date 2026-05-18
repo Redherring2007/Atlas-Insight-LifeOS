@@ -1,33 +1,35 @@
 # Atlas LifeOS QA
 
-## Stage: TypeScript Hardening Stabilisation
-Date/time: 2026-05-18 12:51 Asia/Dubai
-Branch: stabilisation/typescript-hardening
+## Stage: LifeOS Shell Simplification
+Date/time: 2026-05-18 13:25 Asia/Dubai
+Branch: architecture/lifeos-shell-simplification
 
 ### Required Checks
 - `git status --short`
 - `npx tsc --noEmit`
-- `npm run build`
+- `DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder" npm run build`
 
-### Checks Run In This Environment
-- Read project architecture and task docs from the target branch.
-- Inspected Drizzle schema and TypeScript UI files through the GitHub connector.
-- Verified the accidental `263` artefact was already removed from the branch history.
+### Checks Attempted In This Environment
+- Read all required tracking and architecture docs from the branch.
+- Attempted `git status --short`.
+- Attempted `npx tsc --noEmit`.
+- Attempted `DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder" npm run build`.
 
-### Checks Not Run
-- `git status --short`: not run because local shell execution is unavailable.
-- `npx tsc --noEmit`: not run because local shell execution is unavailable.
-- `npm run build`: not run because local shell execution is unavailable.
+### Checks Not Completed
+- `git status --short`: local shell process could not start.
+- `npx tsc --noEmit`: local shell process could not start.
+- Production build command: local shell process could not start.
 
 ### Errors Encountered
-- Local command execution cannot start `/bin/bash` or `/bin/sh` in this environment.
-- GitHub code search is not indexed for this repository, so direct file reads were used instead.
+- Execution tool rejected `/bin/bash` startup with `No such file or directory (os error 2)` for all commands.
 
 ### Manual QA Notes
-- UI structure was not redesigned.
-- Product pages were not removed.
-- TypeScript strictness was not disabled.
-- Fixes were scoped to auth typing, nullable UI rendering, schema-aligned mock values, and documentation.
+- Sidebar reduced to the five target destinations.
+- Mobile shell navigation added for the same five destinations.
+- Home avoids a crowded dashboard and focuses on a small number of operational decisions.
+- Ask Atlas frames the local Atlas Brain as future integration and avoids autonomous execution claims.
+- Command Queue actions are mock/shell-only and do not trigger backend automation.
+- Modules copy avoids unrelated project branding and positions Atlas Risk as operational resilience and awareness.
 
 ### Exact Next Step
-Run `npx tsc --noEmit` and `npm run build` in a working local or CI environment and append the exact output summary here.
+Run the required TypeScript and build checks in a working local or CI environment and append the exact results here.
