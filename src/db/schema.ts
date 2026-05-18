@@ -1,4 +1,4 @@
-import { pgTable, text, integer, timestamp, boolean, uuid, jsonb, decimal } from 'drizzle-orm/pg-core';
+import { pgTable, text, integer, timestamp, boolean, uuid, jsonb, decimal, uniqueIndex } from 'drizzle-orm/pg-core';
 
 export const users = pgTable('users', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -217,5 +217,39 @@ export const dailyBriefings = pgTable('daily_briefings', {
   workspaceId: uuid('workspace_id').references(() => workspaces.id),
   date: timestamp('date').defaultNow(),
   content: text('content'),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+export const connectedAccounts = pgTable('connected_accounts', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id').references(() => users.id),
+  provider: text('provider').notNull(),
+  providerAccountId: text('provider_account_id').notNull(),
+  accountEmail: text('account_email'),
+  displayName: text('display_name'),
+  scopes: jsonb('scopes').notNull().default([]),
+  encryptedAccessToken: text('encrypted_access_token').notNull(),
+  encryptedRefreshToken: text('encrypted_refresh_token'),
+  tokenExpiresAt: timestamp('token_expires_at'),
+  status: text('status').notNull().default('connected'),
+  lastHealthCheckAt: timestamp('last_health_check_at'),
+  lastSignalSyncAt: timestamp('last_signal_sync_at'),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+}, (table) => ({
+  connectedAccountsIdentityIdx: uniqueIndex('connected_accounts_identity_idx').on(table.userId, table.provider, table.providerAccountId),
+}));
+
+export const connectedAccountSignals = pgTable('connected_account_signals', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  connectedAccountId: uuid('connected_account_id').references(() => connectedAccounts.id),
+  signalType: text('signal_type').notNull(),
+  sourceType: text('source_type').notNull(),
+  sourceRef: text('source_ref'),
+  title: text('title').notNull(),
+  summary: text('summary'),
+  confidence: decimal('confidence', { precision: 3, scale: 2 }).default('0.50'),
+  occurredAt: timestamp('occurred_at'),
+  metadataJson: jsonb('metadata_json'),
   createdAt: timestamp('created_at').defaultNow(),
 });
