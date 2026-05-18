@@ -3,7 +3,6 @@
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { BrainIcon } from '@/components/brain-icon'
 import { CalendarView } from '@/components/calendar-view'
 import { CalendarEvent } from '@/types'
 
@@ -105,7 +104,6 @@ export default function CalendarPage() {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <h1 className="text-2xl font-bold">Calendar</h1>
-            <BrainIcon isProcessing={false} size={32} />
           </div>
           <div className="flex items-center space-x-2">
             <button
