@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { ContactCard } from '@/components/contact-card'
 import { QuickAddContactModal } from '@/components/quick-add-contact-modal'
-import { ContactProfileUi, NewContactProfile } from '@/types'
+import { ContactProfileUi } from '@/types'
 import { Plus, Search, Filter } from 'lucide-react'
 
 export default function ContactsPage() {
@@ -102,16 +102,11 @@ export default function ContactsPage() {
     setFilteredContacts(results)
   }, [searchQuery, filterStatus, contacts])
 
-  const handleAddContact = async (newContact: Omit<NewContactProfile, 'id' | 'createdAt' | 'updatedAt'>) => {
+  const handleAddContact = async (newContact: Omit<ContactProfileUi, 'id' | 'createdAt' | 'updatedAt'>) => {
     const contact: ContactProfileUi = {
+      ...newContact,
       id: Math.random().toString(),
       workspaceId: newContact.workspaceId ?? '1',
-      name: newContact.name,
-      email: newContact.email ?? null,
-      phone: newContact.phone ?? null,
-      company: newContact.company ?? null,
-      tags: newContact.tags as string[] | string | null | undefined,
-      trustLevel: newContact.trustLevel ?? 5,
       createdAt: new Date(),
       updatedAt: new Date(),
     }
@@ -175,23 +170,23 @@ export default function ContactsPage() {
 
           <div className="flex items-center space-x-2">
             <Filter size={18} className="text-gray-400" />
-            {(['all', 'cold', 'warm', 'hot'] as const).map(status => (
+            {(['all', 'cold', 'warm', 'hot'] as const).map(filterValue => (
               <button
-                key={status}
-                onClick={() => setFilterStatus(status)}
+                key={filterValue}
+                onClick={() => setFilterStatus(filterValue)}
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  filterStatus === status
-                    ? status === 'cold'
+                  filterStatus === filterValue
+                    ? filterValue === 'cold'
                       ? 'bg-gray-600 text-white'
-                      : status === 'warm'
+                      : filterValue === 'warm'
                       ? 'bg-yellow-600 text-white'
-                      : status === 'hot'
+                      : filterValue === 'hot'
                       ? 'bg-red-600 text-white'
                       : 'bg-blue-600 text-white'
                     : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                 }`}
               >
-                {status.charAt(0).toUpperCase() + status.slice(1)}
+                {filterValue.charAt(0).toUpperCase() + filterValue.slice(1)}
               </button>
             ))}
           </div>
