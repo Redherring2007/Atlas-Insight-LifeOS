@@ -35,8 +35,8 @@ const helpCards = [
     icon: FileText,
   },
   {
-    title: 'Spot friction early',
-    description: 'Surface calm risk and resilience signals across work, life, finance, and operations.',
+    title: 'Stay resilient',
+    description: 'Keep continuity, workload pressure, finance timing, and personal/work friction visible without alarm.',
     icon: ShieldCheck,
   },
 ]
@@ -114,14 +114,24 @@ export default function AskAtlasPage() {
               <p className="text-xs uppercase tracking-[0.3em] text-[#00D9FF]">Atlas Brain</p>
               <h2 className="mt-3 text-3xl font-semibold leading-tight text-white sm:text-4xl">Ask Atlas to turn operational noise into your next clear move.</h2>
               <p className="mt-4 text-sm leading-6 text-[#B0C9E0]">
-                Atlas Brain can prepare summaries, briefs, focus analysis, and approval-ready suggestions. You stay in control: actions move through Command Queue before anything happens.
+                Atlas Brain now works from structured operational context: priorities, blockers, approval load, finance pressure, resilience awareness, and focus pressure. You stay in control through Command Queue.
               </p>
             </div>
             <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm leading-6 text-[#B0C9E0] lg:max-w-sm">
-              <p className="font-semibold text-white">AI-ready, approval-led</p>
-              <p className="mt-2">Live responses use the local Atlas Brain model when available, with safe fallback when it is not.</p>
+              <p className="font-semibold text-white">Calm context, not noise</p>
+              <p className="mt-2">Atlas summarises what matters and proposes next steps without watching, spamming, or executing actions.</p>
             </div>
           </div>
+
+          {response?.contextSnapshot && (
+            <div className="mt-6 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+              {response.contextSnapshot.signals.slice(0, 4).map((signal) => (
+                <div key={signal} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm leading-6 text-[#B0C9E0]">
+                  {signal}
+                </div>
+              ))}
+            </div>
+          )}
 
           <div className="mt-7 rounded-2xl border border-white/10 bg-[#0D1520] p-4">
             <textarea
@@ -134,7 +144,7 @@ export default function AskAtlasPage() {
             <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-2 text-xs text-[#8FA3B8]">
                 <Sparkles className="h-4 w-4 text-[#00D9FF]" />
-                <span>{response?.metadata.provider === 'fallback' ? 'Fallback mode is active; no action was executed.' : 'Atlas prepares suggestions for review, not automatic execution.'}</span>
+                <span>{response?.metadata.provider === 'fallback' ? 'Fallback mode is active; context remains structured and no action was executed.' : 'Atlas uses concise operational context for review-ready suggestions.'}</span>
               </div>
               <button
                 type="button"
