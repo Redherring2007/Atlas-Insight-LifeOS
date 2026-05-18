@@ -21,6 +21,7 @@ Guardrails:
 - Do not send emails, make payments, update databases, or call external tools.
 - Do not expose hidden backend or tool details.
 - Recommend user-controlled Command Queue actions where useful.
+- Treat connected accounts as approved read-only signal sources only.
 - Keep the response concise, clear, supportive, and operational.
 
 Structured operational context:
@@ -63,8 +64,10 @@ function suggestedActionsForMode(mode: AtlasBrainMode, context: OperationalState
     command_suggestions: [
       { id: 'atlas-delayed-project', title: 'Follow up delayed project', type: 'review', rationale: context.projects.summary, source: 'Atlas Brain', proposed: true },
       { id: 'atlas-finance-review', title: 'Review finance pressure', type: 'check', rationale: context.finance.summary, source: 'Atlas Brain', proposed: true },
-      { id: 'atlas-workload-pressure', title: 'Review workload pressure', type: 'review', rationale: context.risk.summary, source: 'Atlas Brain', proposed: true },
-      { id: 'atlas-project-summary', title: 'Generate project summary', type: 'summarise', rationale: 'A concise update can reduce context switching and keep stakeholders aligned.', source: 'Atlas Brain', proposed: true },
+      { id: 'atlas-travel-brief', title: 'Review travel brief', type: 'brief', rationale: 'A read-only connector signal suggests travel planning may affect scheduling later this week.', source: 'Atlas Connect', proposed: true },
+      { id: 'atlas-client-follow-up', title: 'Follow up client', type: 'follow-up', rationale: 'An approved connected account produced a warm follow-up signal for review.', source: 'Atlas Connect', proposed: true },
+      { id: 'atlas-scheduling-clash', title: 'Check scheduling clash', type: 'schedule', rationale: 'Connector signals show possible schedule pressure or a calendar conflict placeholder.', source: 'Atlas Connect', proposed: true },
+      { id: 'atlas-meeting-pack', title: 'Prepare meeting pack', type: 'summarise', rationale: 'Upcoming meeting pressure suggests a concise prep pack may reduce context switching.', source: 'Atlas Connect', proposed: true },
     ],
     operational_summary: [
       { id: 'atlas-summarise-position', title: 'Review operational summary', type: 'summarise', rationale: 'Confirm the current position before choosing next actions.', source: 'Atlas Brain', proposed: true },
