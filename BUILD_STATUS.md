@@ -4,31 +4,31 @@ Current repo:
 Atlas-Insight-LifeOS
 
 Current branch:
-feature/atlas-brain-integration-foundation
+feature/context-awareness-foundation
 
 Current purpose:
 Main ATLAS LifeOS shell for operational intelligence across business and personal life management.
 
 Current stage:
-Atlas Brain integration foundation.
+Context Awareness Foundation.
 
 Current status:
-- Atlas Brain service layer exists under `src/lib/ai`.
-- Ollama provider defaults to local model `atlas-brain` and supports `OLLAMA_BASE_URL` plus `ATLAS_BRAIN_MODEL`.
-- `/api/atlas-brain` supports ask, daily brief, command suggestions, operational summary, and focus modes.
-- Ask Atlas now calls the controlled Atlas Brain API and shows loading/live/fallback states.
-- Command Queue can request proposed Atlas Brain suggestions while keeping all actions approval-only.
-- `.env.example` documents local build and Ollama variables.
-- `tsconfig.tsbuildinfo` is ignored and removed from repository tracking.
+- Structured operational context layer exists under `src/lib/context`.
+- Operational State Engine aggregates tasks, projects, command queue, finance, calendar, risk, priorities, focus analysis, and daily brief context.
+- Atlas Brain receives concise formatted operational context instead of raw placeholder arrays.
+- `/api/atlas-brain` builds operational state per request and returns a context snapshot for calm UI awareness.
+- Ask Atlas displays subtle context signals and keeps prompt/response flow approval-led.
+- Command Queue can request context-aware proposed actions while preserving Approve, Edit, Snooze, and Dismiss controls.
+- Atlas Risk copy is positioned around operational resilience and continuity awareness.
 
 Current known issues:
 - Local shell execution is unavailable in this environment, so required TypeScript/build validation still needs to run in a working local or CI environment.
+- Context data is mocked and summarised; no live module feeds are connected yet.
 - Local Ollama smoke testing could not run from this environment.
-- Atlas Brain currently uses placeholder operational context and deterministic proposed actions.
-- No backend orchestration, external connectors, memory layer, autonomous execution, payments, email sending, or automatic database writes have been built.
+- No autonomous agents, recursive orchestration, memory layer, external connectors, tool execution, email sending, payments, or automatic database writes have been built.
 
 Current priority:
-Validate TypeScript/build and smoke test local Ollama integration before adding deeper Atlas Brain context providers.
+Validate TypeScript/build and smoke test context-aware Atlas Brain responses before connecting any read-only live context adapters.
 
 Immediate goal:
 Run `npx tsc --noEmit`, then `DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder" npm run build`, then smoke test `POST /api/atlas-brain` with Ollama running and `ATLAS_BRAIN_MODEL=atlas-brain`.
