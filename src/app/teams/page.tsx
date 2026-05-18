@@ -6,14 +6,14 @@ import { useEffect, useState } from 'react'
 import { TeamMemberCard } from '@/components/team-member-card'
 import { HandoffCard } from '@/components/handoff-card'
 import { CreateHandoffModal } from '@/components/create-handoff-modal'
-import { WorkspaceMember, TeamHandoff, Task } from '@/types'
+import { Task, TeamHandoffUi, WorkspaceMemberUi } from '@/types'
 import { Plus, Users, ArrowRightLeft, TrendingUp } from 'lucide-react'
 
 export default function TeamsPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
-  const [teamMembers, setTeamMembers] = useState<WorkspaceMember[]>([])
-  const [handoffs, setHandoffs] = useState<TeamHandoff[]>([])
+  const [teamMembers, setTeamMembers] = useState<WorkspaceMemberUi[]>([])
+  const [handoffs, setHandoffs] = useState<TeamHandoffUi[]>([])
   const [availableTasks, setAvailableTasks] = useState<Task[]>([])
   const [isHandoffModalOpen, setIsHandoffModalOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
@@ -27,8 +27,7 @@ export default function TeamsPage() {
 
   useEffect(() => {
     if (session?.user) {
-      // Mock team members
-      const mockMembers: WorkspaceMember[] = [
+      const mockMembers: WorkspaceMemberUi[] = [
         {
           id: '1',
           workspaceId: '1',
@@ -37,7 +36,7 @@ export default function TeamsPage() {
           joinedAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
           user: { name: 'Sarah Johnson', email: 'sarah@company.com' },
           workload: { total: 12, pending: 8, overdue: 2 },
-        } as any,
+        },
         {
           id: '2',
           workspaceId: '1',
@@ -46,7 +45,7 @@ export default function TeamsPage() {
           joinedAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000),
           user: { name: 'Mike Chen', email: 'mike@company.com' },
           workload: { total: 6, pending: 4, overdue: 0 },
-        } as any,
+        },
         {
           id: '3',
           workspaceId: '1',
@@ -55,11 +54,10 @@ export default function TeamsPage() {
           joinedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
           user: { name: 'Emma Rodriguez', email: 'emma@company.com' },
           workload: { total: 9, pending: 6, overdue: 1 },
-        } as any,
+        },
       ]
 
-      // Mock handoffs
-      const mockHandoffs: TeamHandoff[] = [
+      const mockHandoffs: TeamHandoffUi[] = [
         {
           id: '1',
           workspaceId: '1',
@@ -75,7 +73,7 @@ export default function TeamsPage() {
           priority: 'high',
           dueDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
           notes: 'Please review the attached contract and provide feedback by EOD',
-        } as any,
+        },
         {
           id: '2',
           workspaceId: '1',
@@ -91,7 +89,7 @@ export default function TeamsPage() {
           priority: 'medium',
           dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
           notes: 'Need the homepage and about page updated with new branding',
-        } as any,
+        },
         {
           id: '3',
           workspaceId: '1',
@@ -107,18 +105,17 @@ export default function TeamsPage() {
           priority: 'high',
           dueDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
           notes: 'Client meeting tomorrow, need slides ready by 5pm',
-        } as any,
+        },
       ]
 
-      // Mock available tasks for delegation
       const mockTasks: Task[] = [
         {
           id: 'task-4',
           projectId: 'proj-1',
           workspaceId: '1',
           title: 'Follow up on invoice #2024-001',
-          description: 'Client hasn\'t paid yet',
-          status: 'pending',
+          description: 'Client has not paid yet',
+          status: 'todo',
           priority: 'high',
           assigneeId: 'user-1',
           dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
@@ -131,7 +128,7 @@ export default function TeamsPage() {
           workspaceId: '1',
           title: 'Schedule team meeting',
           description: 'Weekly sync for Q2 planning',
-          status: 'pending',
+          status: 'todo',
           priority: 'medium',
           assigneeId: 'user-1',
           dueDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
@@ -147,19 +144,19 @@ export default function TeamsPage() {
     }
   }, [session?.user])
 
-  const handleCreateHandoff = async (newHandoff: Omit<TeamHandoff, 'id' | 'createdAt' | 'updatedAt'>) => {
-    const handoff: TeamHandoff = {
+  const handleCreateHandoff = async (newHandoff: Omit<TeamHandoffUi, 'id' | 'createdAt' | 'updatedAt'>) => {
+    const handoff: TeamHandoffUi = {
       id: Math.random().toString(),
       ...newHandoff,
       createdAt: new Date(),
       updatedAt: new Date(),
-    } as any
+    }
 
     setHandoffs(prev => [handoff, ...prev])
     setIsHandoffModalOpen(false)
   }
 
-  const handleUpdateHandoff = (handoffId: string, updates: Partial<TeamHandoff>) => {
+  const handleUpdateHandoff = (handoffId: string, updates: Partial<TeamHandoffUi>) => {
     setHandoffs(prev =>
       prev.map(h =>
         h.id === handoffId
@@ -183,7 +180,7 @@ export default function TeamsPage() {
 
   const calculateStats = () => {
     const totalMembers = teamMembers.length
-    const totalWorkload = teamMembers.reduce((sum, m) => sum + ((m as any).workload?.total || 0), 0)
+    const totalWorkload = teamMembers.reduce((sum, m) => sum + (m.workload?.total ?? 0), 0)
     const pendingHandoffs = handoffs.filter(h => h.status === 'pending').length
     const completedHandoffs = handoffs.filter(h => h.status === 'completed').length
 
@@ -202,11 +199,10 @@ export default function TeamsPage() {
 
   return (
     <div className="min-h-screen bg-gray-900 p-6">
-      {/* Header */}
       <div className="max-w-7xl mx-auto mb-8">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-white mb-2">👥 Team & Handoffs</h1>
+            <h1 className="text-3xl font-bold text-white mb-2">Team & Handoffs</h1>
             <p className="text-gray-400">Manage team members and delegate tasks efficiently.</p>
           </div>
           <button
@@ -218,7 +214,6 @@ export default function TeamsPage() {
           </button>
         </div>
 
-        {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
           <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
             <div className="flex items-center justify-between mb-2">
@@ -253,7 +248,6 @@ export default function TeamsPage() {
           </div>
         </div>
 
-        {/* Tabs */}
         <div className="flex space-x-1 bg-gray-800 rounded-lg p-1 mb-6">
           {(['members', 'handoffs'] as const).map(tab => (
             <button
@@ -265,13 +259,12 @@ export default function TeamsPage() {
                   : 'text-gray-300 hover:text-white hover:bg-gray-700'
               }`}
             >
-              {tab === 'members' ? '👥 Team Members' : '🔄 Task Handoffs'}
+              {tab === 'members' ? 'Team Members' : 'Task Handoffs'}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Content */}
       <div className="max-w-7xl mx-auto">
         {activeTab === 'members' ? (
           <>
@@ -319,7 +312,6 @@ export default function TeamsPage() {
         )}
       </div>
 
-      {/* Create Handoff Modal */}
       <CreateHandoffModal
         isOpen={isHandoffModalOpen}
         onClose={() => setIsHandoffModalOpen(false)}
@@ -327,9 +319,9 @@ export default function TeamsPage() {
         workspaceId={session?.user?.id || '1'}
         currentUserId={session?.user?.id || 'user-1'}
         teamMembers={teamMembers.map(m => ({
-          id: (m as any).userId,
-          name: (m as any).user?.name || 'Unknown',
-          email: (m as any).user?.email || 'unknown@example.com'
+          id: m.userId ?? m.id,
+          name: m.user?.name || 'Unknown',
+          email: m.user?.email || 'unknown@example.com'
         }))}
         availableTasks={availableTasks}
       />
