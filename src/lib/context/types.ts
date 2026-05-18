@@ -1,3 +1,5 @@
+import type { ConnectorSignalSummary } from '@/lib/connectors/types'
+
 export type PressureLevel = 'low' | 'moderate' | 'elevated'
 
 export interface TaskContext {
@@ -70,6 +72,7 @@ export interface DailyBriefContext {
   blockers: string[]
   opportunities: string[]
   riskAndContinuityNotes: string[]
+  connectorNotes: string[]
   commandQueueRecommendations: string[]
   recommendedNextAction: string
   summary: string
@@ -93,6 +96,7 @@ export interface OperationalState {
   finance: FinanceContext
   calendar: CalendarContext
   risk: RiskContext
+  connectors: ConnectorSignalSummary
   priorities: PriorityContext
   focusAnalysis: FocusAnalysisContext
   dailyBrief: DailyBriefContext

@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-05-18 - Read-Only Universal Connector Foundation
+- Added provider-neutral Atlas Connect contracts under `src/lib/connectors` for providers, connection methods, read-only capabilities, connection health, connected accounts, and operational signals.
+- Added deterministic local provider detection for Gmail/Google Workspace, Microsoft 365/Outlook/Exchange, iCloud, Zoho, Yahoo, Proton Mail Bridge/manual, Generic IMAP, Google Calendar, Outlook Calendar, CalDAV, and ICS fallback paths.
+- Added mock connected accounts and signal extraction summaries for meetings, travel, urgent follow-ups, client opportunities, finance pressure, schedule pressure, operational blockers, risk awareness, and personal/work clashes.
+- Added `/connect` with read-only setup explanation, account/provider detection, confidence result, manual setup fallback, connected account mocks, connection health, and supported signal types.
+- Updated the Atlas Connect module card to link to `/connect` and use trust-focused approved-account signal language.
+- Integrated connector signal summaries into the Operational State Engine, Daily Brief context, and Atlas Brain fallback Command Queue suggestions.
+- Preserved safety boundaries: no production OAuth, no write access, no email sending, no calendar editing, no external automation, and no autonomous execution.
+
 ## 2026-05-18 - Repository Cleanup and Atlas-only Audit
 - Added `CLEANUP_AUDIT.md` with keep, legacy/internal, archive, remove, and future-decision classifications.
 - Removed stale duplicate AI routes `/brain` and `/ai-brain` now superseded by Ask Atlas and Atlas Brain service layer.
