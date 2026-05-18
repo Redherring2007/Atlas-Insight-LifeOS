@@ -1,8 +1,9 @@
 import { getGoogleReadonlyConfig, googleScopesAreReadOnly } from './config'
-import type { GoogleOAuthStartResult, GoogleReadonlyConfig, GoogleTokenExchangeResult } from './types'
+import type { GoogleOAuthStartResult, GoogleReadonlyConfig, GoogleReadonlyProfile, GoogleTokenExchangeResult } from './types'
 
 const GOOGLE_AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth'
 const GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token'
+const GOOGLE_USERINFO_URL = 'https://openidconnect.googleapis.com/v1/userinfo'
 
 function buildState() {
   return `atlas-google-${Date.now().toString(36)}`
@@ -115,4 +116,23 @@ export async function refreshGoogleAccessToken(refreshToken: string): Promise<Go
     grant_type: 'refresh_token',
     refresh_token: refreshToken,
   }))
+}
+
+export async function fetchGoogleReadonlyProfile(accessToken: string): Promise<GoogleReadonlyProfile> {
+  const response = await fetch(GOOGLE_USERINFO_URL, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  })
+
+  if (!response.ok) {
+    throw new Error(`Google profile fetch failed with status ${response.status}`)
+  }
+
+  const payload = await response.json() as Record<string, unknown>
+
+  return {
+    id: typeof payload.sub === 'string' ? payload.sub : 'google-account',
+    email: typeof payload.email === 'string' ? payload.email : undefined,
+    name: typeof payload.name === 'string' ? payload.name : undefined,
+    picture: typeof payload.picture === 'string' ? payload.picture : undefined,
+  }
 }
