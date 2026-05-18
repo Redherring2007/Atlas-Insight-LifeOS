@@ -1,5 +1,51 @@
 # Atlas LifeOS QA
 
+## Stage: Context Awareness Foundation
+Date/time: 2026-05-18 16:20 Asia/Dubai
+Branch: feature/context-awareness-foundation
+
+### Required Checks
+- `git status --short`
+- `npx tsc --noEmit`
+- `DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder" npm run build`
+- Local Atlas Brain smoke test with Ollama running and context-aware prompts.
+
+### Checks Attempted In This Environment
+- Attempted `git status --short`.
+- Attempted `npx tsc --noEmit`.
+- Attempted `DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder" npm run build`.
+- Reviewed branch files through the GitHub connector.
+
+### Checks Not Completed
+- `git status --short`: local shell process could not start.
+- `npx tsc --noEmit`: local shell process could not start.
+- Production build command: local shell process could not start.
+- Ollama smoke test: local shell process could not start, so `/api/atlas-brain` could not be exercised from this environment.
+- Browser visual QA: app could not be launched from this environment.
+
+### Errors Encountered
+- Execution tool rejected `/bin/bash` startup with `No such file or directory (os error 2)` for all commands.
+
+### Manual QA Notes
+- Context builders return structured summaries rather than raw data dumps.
+- Operational State Engine creates a single context object for Atlas Brain with workload, focus, approvals, finance, resilience, blockers, and opportunities.
+- Ask Atlas displays context signals only after a response, keeping the page calm by default.
+- Command Queue suggestions remain proposed and user-controlled; no external actions are executed.
+- Atlas Risk language uses operational resilience and continuity awareness, avoiding alarmist or niche security positioning.
+- No memory system, autonomous agent loop, recursive orchestration, external automation, email/calendar execution, or tool autonomy was added.
+
+### Local Smoke Test Steps
+1. Run `npx tsc --noEmit`.
+2. Run `DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder" npm run build`.
+3. Start Ollama locally and confirm `ollama list` includes `atlas-brain`.
+4. Submit `Generate my Daily Brief.` on `/ask-atlas` and confirm the response references structured priorities, blockers, finance/resilience awareness, and a next action.
+5. Submit `Suggest Command Queue actions.` and confirm returned actions are proposed only.
+6. Stop Ollama or change `OLLAMA_BASE_URL` temporarily and confirm fallback mode still returns context-aware guidance without crashing.
+7. Open `/command-queue`, click `Suggest actions`, and confirm proposed cards are review-only.
+
+### Exact Next Step
+Run the required TypeScript/build checks and the context-aware Ollama smoke test in a working local or CI environment, then append the exact pass/fail output here.
+
 ## Stage: Atlas Brain Integration Foundation
 Date/time: 2026-05-18 15:00 Asia/Dubai
 Branch: feature/atlas-brain-integration-foundation
