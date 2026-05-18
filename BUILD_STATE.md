@@ -1,39 +1,40 @@
 # Atlas LifeOS Build State
 
-Stage: TypeScript Hardening Stabilisation
-Date/time: 2026-05-18 12:51 Asia/Dubai
-Branch: stabilisation/typescript-hardening
-Status: Changes prepared on branch; local validation still required.
+Stage: LifeOS Shell Simplification
+Date/time: 2026-05-18 13:25 Asia/Dubai
+Branch: architecture/lifeos-shell-simplification
+Status: Shell simplification changes prepared; validation blocked by unavailable local shell.
 
 ## Current Purpose
-Stabilise TypeScript and build readiness before the next task simplifies LifeOS into Home, Ask Atlas, Command Queue, Modules, and Settings.
+Make ATLAS feel simple, clear, premium, and operationally powerful while preserving deeper module architecture underneath.
 
 ## Current Status
-- Auth/session typing has been centralized with NextAuth module augmentation.
-- Nullable schema fields are handled at UI display boundaries.
-- Finance demo data now follows decimal string schema expectations.
-- Team handoff status is treated as derived UI state rather than persisted schema state.
-- Accidental `263` artefact was already removed on the target branch before this pass.
+- Top-level navigation is now Home, Ask Atlas, Command Queue, Modules, Settings.
+- Home is now a calm operational surface for focus, daily brief, command preview, modules, and strategic signals.
+- Ask Atlas is positioned as the central operational brain and future Atlas Brain entry point.
+- Command Queue exists as the approval/action layer with safe mock actions only.
+- Modules page presents Atlas Projects, CRM, Verify, Risk, Finance, Vault, Connect, and MyLife with clear product positioning.
+- Underlying prototype routes remain available but are no longer exposed as top-level shell navigation.
 
 ## Current Blockers
-- Local shell execution is unavailable in this environment, so `npx tsc --noEmit` and `npm run build` could not be run here.
+- Local shell execution is unavailable in this environment, so `git status --short`, `npx tsc --noEmit`, and the production build command could not execute.
 
 ## Checks Run
-- Read `ARCHITECTURE.md`.
-- Read `MODULE_MAP.md`.
-- Read `CODEX_TASKS.md`.
-- Read `BUILD_STATUS.md`.
-- Inspected tracking docs: `BUILD_LOG.md`, `BUILD_STATE.md`, `CHANGELOG.md`, and `QA.md` were missing and were created.
-- Inspected schema, auth, route, and component files through GitHub branch reads.
+- Read required architecture, module map, task, status, build log, build state, changelog, and QA docs.
+- Attempted `git status --short`; blocked before shell startup.
+- Attempted `npx tsc --noEmit`; blocked before shell startup.
+- Attempted `DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder" npm run build`; blocked before shell startup.
+- Reviewed final GitHub diff from the branch base.
 
 ## Checks Still Required
 - `git status --short`
 - `npx tsc --noEmit`
-- `npm run build`
+- `DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder" npm run build`
 
 ## Known Risks
-- Because local TypeScript could not be executed, residual errors may remain in pages/components that were not surfaced by runtime inspection.
-- The repository still includes broad module pages that may be simplified later, but they were left in place per stabilisation scope.
+- Residual TypeScript/build errors may remain until validation can run in a working environment.
+- Mobile layout was improved with bottom navigation, but visual QA screenshots could not be captured without a running app.
+- Legacy/prototype routes still need later cleanup for consistency, but capability was intentionally preserved.
 
 ## Exact Next Step
-Run `npx tsc --noEmit` in a working local or CI environment on `stabilisation/typescript-hardening`, fix any remaining compiler output by category, then run `npm run build`.
+Run the TypeScript and build checks in a working environment; if they pass, continue with a careful Atlas Brain integration layer that keeps all execution approval-led through Command Queue.
