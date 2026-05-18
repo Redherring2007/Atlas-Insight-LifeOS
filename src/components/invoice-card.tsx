@@ -1,7 +1,8 @@
 'use client'
 
-import { Invoice } from '@/types'
+import { Invoice, InvoiceStatus } from '@/types'
 import { Trash2, Eye, CheckCircle, AlertCircle } from 'lucide-react'
+import { displayDate, formatCurrency } from '@/lib/display'
 
 interface InvoiceCardProps {
   invoice: Invoice
@@ -10,18 +11,24 @@ interface InvoiceCardProps {
 }
 
 const statusConfig = {
-  pending: { bg: 'bg-yellow-600', text: 'text-yellow-200', label: '⏳ Pending' },
-  paid: { bg: 'bg-green-600', text: 'text-green-200', label: '✓ Paid' },
-  overdue: { bg: 'bg-red-600', text: 'text-red-200', label: '⚠️ Overdue' },
+  pending: { bg: 'bg-yellow-600', text: 'text-yellow-200', label: 'Pending' },
+  paid: { bg: 'bg-green-600', text: 'text-green-200', label: 'Paid' },
+  overdue: { bg: 'bg-red-600', text: 'text-red-200', label: 'Overdue' },
+}
+
+function normalizeInvoiceStatus(status: string | null): Exclude<InvoiceStatus, 'overdue'> {
+  return status === 'paid' ? 'paid' : 'pending'
 }
 
 export function InvoiceCard({ invoice, onUpdate, onDelete }: InvoiceCardProps) {
-  const isOverdue = invoice.dueDate && new Date(invoice.dueDate) < new Date() && invoice.status !== 'paid'
-  const actualStatus = isOverdue ? 'overdue' : (invoice.status as keyof typeof statusConfig)
+  const invoiceStatus = normalizeInvoiceStatus(invoice.status)
+  const dueDate = invoice.dueDate ? new Date(invoice.dueDate) : null
+  const isOverdue = Boolean(dueDate && dueDate < new Date() && invoiceStatus !== 'paid')
+  const actualStatus: InvoiceStatus = isOverdue ? 'overdue' : invoiceStatus
   const config = statusConfig[actualStatus]
 
-  const daysUntilDue = invoice.dueDate 
-    ? Math.ceil((new Date(invoice.dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
+  const daysUntilDue = dueDate
+    ? Math.ceil((dueDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
     : 0
 
   return (
@@ -33,24 +40,24 @@ export function InvoiceCard({ invoice, onUpdate, onDelete }: InvoiceCardProps) {
             <button
               onClick={() => {
                 const newStatus = actualStatus === 'paid' ? 'pending' : 'paid'
-                onUpdate(invoice.id, { status: newStatus as any })
+                onUpdate(invoice.id, { status: newStatus })
               }}
               className={`flex items-center space-x-1 px-2 py-1 rounded text-xs font-semibold ${config.bg} ${config.text} hover:opacity-80 transition-opacity cursor-pointer`}
             >
               {actualStatus === 'paid' ? (
                 <>
                   <CheckCircle size={14} />
-                  <span>Paid</span>
+                  <span>{config.label}</span>
                 </>
               ) : actualStatus === 'overdue' ? (
                 <>
                   <AlertCircle size={14} />
-                  <span>Overdue</span>
+                  <span>{config.label}</span>
                 </>
               ) : (
                 <>
                   <Eye size={14} />
-                  <span>Pending</span>
+                  <span>{config.label}</span>
                 </>
               )}
             </button>
@@ -58,25 +65,20 @@ export function InvoiceCard({ invoice, onUpdate, onDelete }: InvoiceCardProps) {
         </div>
       </div>
 
-      {/* Amount */}
       <div className="mb-3">
         <p className="text-3xl font-bold text-white">
-          £{parseFloat(String(invoice.amount || 0)).toLocaleString('en-GB', { 
-            minimumFractionDigits: 2, 
-            maximumFractionDigits: 2 
-          })}
+          £{formatCurrency(invoice.amount)}
         </p>
       </div>
 
-      {/* Due date and client */}
       <div className="space-y-2 text-sm mb-3 pb-3 border-b border-gray-700">
-        {invoice.dueDate && (
+        {dueDate && (
           <div className="flex justify-between items-center">
             <span className="text-gray-400">Due date</span>
             <span className={`font-medium ${
               isOverdue ? 'text-red-400' : daysUntilDue < 7 ? 'text-yellow-400' : 'text-gray-300'
             }`}>
-              {new Date(invoice.dueDate).toLocaleDateString()}
+              {displayDate(dueDate)}
               {daysUntilDue > 0 && !isOverdue && (
                 <span className="text-gray-500 ml-1">({daysUntilDue}d left)</span>
               )}
@@ -88,10 +90,9 @@ export function InvoiceCard({ invoice, onUpdate, onDelete }: InvoiceCardProps) {
         )}
       </div>
 
-      {/* Actions */}
       <div className="flex justify-between items-center">
         <div className="text-xs text-gray-500">
-          {new Date(invoice.createdAt).toLocaleDateString()}
+          {displayDate(invoice.createdAt)}
         </div>
         <button
           onClick={() => onDelete(invoice.id)}
