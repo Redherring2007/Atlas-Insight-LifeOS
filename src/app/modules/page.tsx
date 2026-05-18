@@ -17,6 +17,7 @@ const modules = [
     description: 'Plan work, manage priorities, track blockers, and feed action requests into Command Queue.',
     status: 'Active' as ModuleStatus,
     href: '/projects',
+    cta: 'Open module',
     icon: BriefcaseBusiness,
   },
   {
@@ -25,6 +26,7 @@ const modules = [
     description: 'Keep relationship context clear and prepare follow-ups without turning Home into a CRM dashboard.',
     status: 'Active' as ModuleStatus,
     href: '/contacts',
+    cta: 'Open module',
     icon: Contact,
   },
   {
@@ -33,14 +35,16 @@ const modules = [
     description: 'Includes Snapshot and DeepSweep as clean commercial verification products for confident decisions.',
     status: 'Planned' as ModuleStatus,
     href: '/modules',
+    cta: 'View plan',
     icon: FileCheck2,
   },
   {
     name: 'Atlas Risk',
     purpose: 'Operational resilience and awareness for business and life management.',
-    description: 'Future views include business performance, risk and security, personal and executive awareness.',
-    status: 'Connected' as ModuleStatus,
-    href: '/connected-systems',
+    description: 'Future sections include business performance overview, risk and security overview, and personal/executive awareness.',
+    status: 'Planned' as ModuleStatus,
+    href: '/modules',
+    cta: 'View plan',
     icon: ShieldCheck,
   },
   {
@@ -49,6 +53,7 @@ const modules = [
     description: 'Designed to integrate with Xero, QuickBooks, and Zoho later rather than replace accounting systems.',
     status: 'Active' as ModuleStatus,
     href: '/finance',
+    cta: 'Open module',
     icon: Landmark,
   },
   {
@@ -57,6 +62,7 @@ const modules = [
     description: 'A future knowledge layer for documents, records, and trusted operational context.',
     status: 'Planned' as ModuleStatus,
     href: '/modules',
+    cta: 'View plan',
     icon: Vault,
   },
   {
@@ -64,7 +70,8 @@ const modules = [
     purpose: 'Approved integrations/connectors for email, calendar, finance, CRM and external systems.',
     description: 'Keeps external systems connected beneath the shell without exposing backend complexity.',
     status: 'Coming Soon' as ModuleStatus,
-    href: '/connected-systems',
+    href: '/modules',
+    cta: 'View plan',
     icon: Link2,
   },
   {
@@ -73,6 +80,7 @@ const modules = [
     description: 'Calendar, routines, goals, personal finance awareness, and conflict awareness in one calm layer.',
     status: 'Planned' as ModuleStatus,
     href: '/calendar',
+    cta: 'Open prototype',
     icon: LifeBuoy,
   },
 ]
@@ -103,7 +111,7 @@ export default function ModulesPage() {
   return (
     <div className="min-h-screen bg-[#070B10] text-[#EAF2F8] md:flex">
       <SideNav />
-      <main className="flex-1 px-4 py-5 sm:px-6 lg:px-10 lg:py-8">
+      <main className="flex-1 px-4 py-5 pb-24 sm:px-6 lg:px-10 lg:py-8">
         <BrandHeader userName={session.user?.name ?? 'Operator'} workspaceLabel="Modules" />
 
         <section className="mt-6 rounded-3xl border border-white/10 bg-[#121C28]/85 p-5 shadow-[0_30px_80px_rgba(0,0,0,0.22)] backdrop-blur-xl sm:p-7">
@@ -129,7 +137,7 @@ export default function ModulesPage() {
                 <p className="mt-2 text-sm font-medium text-[#EAF2F8]">{module.purpose}</p>
                 <p className="mt-3 text-sm leading-6 text-[#B0C9E0]">{module.description}</p>
                 <Link href={module.href} className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[#00D9FF] hover:text-white">
-                  Open module <ArrowRight className="h-4 w-4" />
+                  {module.cta} <ArrowRight className="h-4 w-4" />
                 </Link>
               </article>
             )
