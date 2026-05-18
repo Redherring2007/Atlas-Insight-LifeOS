@@ -8,7 +8,7 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 
-const systems = [
+const systems: Array<{ id: string; title: string; category: string; status: 'connected' | 'available' | 'disabled'; description: string }> = [
   {
     id: 'atlas-insight',
     title: 'ATLAS Insight',

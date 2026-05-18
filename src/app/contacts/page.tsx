@@ -260,8 +260,8 @@ export default function ContactsPage() {
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         onSubmit={handleAddContact}
-        workspaceId={session?.user?.id || '1'}
-        userId={session?.user?.id || 'user-1'}
+        workspaceId={'1'}
+        userId={'user-1'}
       />
     </div>
   )
