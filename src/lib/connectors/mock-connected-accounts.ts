@@ -2,8 +2,20 @@ import type { ConnectedAccount, ConnectorSignal } from './types'
 
 export const mockConnectedAccounts: ConnectedAccount[] = [
   {
+    id: 'google-workspace-readonly',
+    label: 'Google Workspace read-only adapter',
+    accountAddress: 'operator@gmail.com',
+    provider: 'Gmail / Google Workspace',
+    providerType: 'email-calendar',
+    connectionMethod: 'oauth-later',
+    healthStatus: 'setup-required',
+    lastSignalScanAt: '2026-05-18T11:00:00.000Z',
+    signalTypes: ['meeting', 'meeting-change', 'urgent-follow-up', 'client-opportunity', 'finance-pressure', 'travel', 'schedule-pressure', 'deadline', 'operational-blocker'],
+    readOnly: true,
+  },
+  {
     id: 'acct-google-workspace',
-    label: 'Work Google Workspace',
+    label: 'Work Google Workspace mock',
     accountAddress: 'operator@atlas.example',
     provider: 'Gmail / Google Workspace',
     providerType: 'email-calendar',
