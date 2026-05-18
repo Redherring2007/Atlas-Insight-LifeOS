@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
-import { ArrowRight, BriefcaseBusiness, FileCheck2, Landmark, LifeBuoy, Link2, ShieldCheck, Users, Vault } from 'lucide-react'
+import { Archive, ArrowRight, Briefcase, FileCheck2, Landmark, LifeBuoy, Link2, ShieldCheck, Users } from 'lucide-react'
 import { BrandHeader } from '@/components/brand-header'
 import { SideNav } from '@/components/side-nav'
 
@@ -18,7 +18,7 @@ const modules = [
     status: 'Active' as ModuleStatus,
     href: '/projects',
     cta: 'Open module',
-    icon: BriefcaseBusiness,
+    icon: Briefcase,
   },
   {
     name: 'Atlas CRM',
@@ -57,13 +57,13 @@ const modules = [
     icon: Landmark,
   },
   {
-    name: 'Atlas Vault',
+    name: 'Atlas Archive',
     purpose: 'Secure documents, memory, evidence, files and operational knowledge storage.',
     description: 'A future knowledge layer for documents, records, and trusted operational context.',
     status: 'Planned' as ModuleStatus,
     href: '/modules',
     cta: 'View plan',
-    icon: Vault,
+    icon: Archive,
   },
   {
     name: 'Atlas Connect',
