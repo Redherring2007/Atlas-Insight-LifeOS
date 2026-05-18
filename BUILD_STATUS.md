@@ -4,30 +4,32 @@ Current repo:
 Atlas-Insight-LifeOS
 
 Current branch:
-feature/read-only-connectors-foundation
+feature/google-workspace-readonly-adapter
 
 Current purpose:
 Main ATLAS LifeOS shell for operational intelligence across business and personal life management.
 
 Current stage:
-Read-Only Universal Connector Foundation.
+Google Workspace Read-Only Adapter Foundation.
 
 Current status:
-- Atlas Connect foundation exists under `src/lib/connectors` with provider-neutral types, detection heuristics, read-only capability summaries, connection health helpers, mock connected accounts, and signal extraction summaries.
-- `/connect` is the current Atlas Connect setup surface for approved read-only email/calendar account signal preparation.
-- Modules now routes Atlas Connect to `/connect`.
-- Operational Context Engine and Daily Brief can consume connector signal summaries.
-- Atlas Brain fallback Command Queue suggestions include connector-aware proposed actions while preserving approval-only behaviour.
-- No production OAuth, credential storage, token refresh, live inbox/calendar sync, write access, or external automation exists in this phase.
+- Google Workspace is now the first provider-specific Atlas Connect adapter foundation.
+- `src/lib/connectors/google` contains read-only config, OAuth helpers, Gmail metadata/snippet extraction, Google Calendar event metadata extraction, signal mapping, and health helpers.
+- `/api/connect/google/start`, `/api/connect/google/callback`, `/api/connect/google/health`, and `/api/connect/google/signals` exist as safe foundation routes.
+- `/connect` shows Google Workspace as the first real adapter path with read-only scope explanation, mock-safe state, health panel, and safety boundary.
+- `.env.example` documents `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI`, and `GOOGLE_CONNECT_SCOPES`.
+- Operational Context Engine can consume mock Google Gmail/Calendar signals without requiring a live connection.
+- No token persistence, credential storage, write scopes, email sending, calendar editing, event creation, deleting, archiving, mark-read, auto-responding, or autonomous execution exists in this phase.
 
 Current known issues:
 - Local shell execution is unavailable in this environment, so required TypeScript/build validation still needs to run in a working local or CI environment.
-- Provider detection is heuristic only and does not perform DNS/MX lookup, OAuth discovery, autodiscover, or live account verification.
-- `/connect` uses mock connected accounts only and does not persist user setup state.
-- Production read-only connector implementation needs consent design, secure token storage, audit logging, provider-specific scopes, and privacy review.
+- Google OAuth callback does not persist tokens and therefore does not create a durable connected account yet.
+- Live signals route requires a bearer access token supplied for the request; this is foundation-only and not production account linking.
+- Signal extraction is heuristic and metadata/snippet based.
+- Secure encrypted token storage, consent audit trail, disconnect/revoke flow, and provider verification remain future work.
 
 Current priority:
-Validate this connector foundation branch, then prepare the first real read-only provider implementation path.
+Validate the Google adapter foundation branch, then design secure token persistence and account-linking before enabling live Google connections.
 
 Immediate goal:
-Run `npx tsc --noEmit`, then `DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder" npm run build`, then smoke test `/connect`, `/modules`, `/ask-atlas`, and `/command-queue`.
+Run `npx tsc --noEmit`, then `DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder" npm run build`, then smoke test `/connect` and the Google connector API routes.
