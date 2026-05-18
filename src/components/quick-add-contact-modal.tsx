@@ -2,17 +2,17 @@
 
 import { useState } from 'react'
 import { X, Upload } from 'lucide-react'
-import { NewContactProfile } from '@/types'
+import { ContactProfileUi } from '@/types'
 
 interface QuickAddContactModalProps {
   isOpen: boolean
   onClose: () => void
-  onSubmit: (contact: Omit<NewContactProfile, 'id' | 'createdAt' | 'updatedAt'>) => void
+  onSubmit: (contact: Omit<ContactProfileUi, 'id' | 'createdAt' | 'updatedAt'>) => void
   workspaceId: string
   userId: string
 }
 
-export function QuickAddContactModal({ isOpen, onClose, onSubmit, workspaceId, userId }: QuickAddContactModalProps) {
+export function QuickAddContactModal({ isOpen, onClose, onSubmit, workspaceId }: QuickAddContactModalProps) {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -31,7 +31,7 @@ export function QuickAddContactModal({ isOpen, onClose, onSubmit, workspaceId, u
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!formData.name.trim()) {
       alert('Please enter a name')
       return
@@ -47,7 +47,7 @@ export function QuickAddContactModal({ isOpen, onClose, onSubmit, workspaceId, u
       trustLevel: 5,
       whereMet: formData.whereMet.trim() || null,
       conversationPoints: formData.conversationPoints.trim() || null,
-    } as any)
+    })
 
     setFormData({
       name: '',
@@ -66,10 +66,9 @@ export function QuickAddContactModal({ isOpen, onClose, onSubmit, workspaceId, u
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-gray-800 rounded-lg border border-gray-700 shadow-xl max-w-md w-full mx-4">
-        {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-700 bg-gray-750">
           <h2 className="text-lg font-semibold text-white">
-            {scanMode ? '📱 Scan Business Card' : '➕ Add Contact'}
+            {scanMode ? 'Scan Business Card' : 'Add Contact'}
           </h2>
           <button
             onClick={onClose}
@@ -79,11 +78,9 @@ export function QuickAddContactModal({ isOpen, onClose, onSubmit, workspaceId, u
           </button>
         </div>
 
-        {/* Content */}
         <form onSubmit={handleSubmit} className="p-4 space-y-3">
           {!scanMode ? (
             <>
-              {/* Name (required) */}
               <div>
                 <label className="text-xs font-semibold text-gray-300 mb-1 block">
                   Name *
@@ -99,7 +96,6 @@ export function QuickAddContactModal({ isOpen, onClose, onSubmit, workspaceId, u
                 />
               </div>
 
-              {/* Company */}
               <div>
                 <label className="text-xs font-semibold text-gray-300 mb-1 block">
                   Company
@@ -114,7 +110,6 @@ export function QuickAddContactModal({ isOpen, onClose, onSubmit, workspaceId, u
                 />
               </div>
 
-              {/* Email */}
               <div>
                 <label className="text-xs font-semibold text-gray-300 mb-1 block">
                   Email
@@ -129,7 +124,6 @@ export function QuickAddContactModal({ isOpen, onClose, onSubmit, workspaceId, u
                 />
               </div>
 
-              {/* Phone */}
               <div>
                 <label className="text-xs font-semibold text-gray-300 mb-1 block">
                   Phone
@@ -144,7 +138,6 @@ export function QuickAddContactModal({ isOpen, onClose, onSubmit, workspaceId, u
                 />
               </div>
 
-              {/* Where Met */}
               <div>
                 <label className="text-xs font-semibold text-gray-300 mb-1 block">
                   Where Met
@@ -159,7 +152,6 @@ export function QuickAddContactModal({ isOpen, onClose, onSubmit, workspaceId, u
                 />
               </div>
 
-              {/* Conversation Points */}
               <div>
                 <label className="text-xs font-semibold text-gray-300 mb-1 block">
                   Quick Notes
@@ -178,7 +170,7 @@ export function QuickAddContactModal({ isOpen, onClose, onSubmit, workspaceId, u
             <div className="py-8 text-center">
               <Upload size={32} className="text-gray-400 mx-auto mb-2" />
               <p className="text-gray-400 text-sm">
-                Business card scanning coming soon! 
+                Business card scanning coming soon!
               </p>
               <p className="text-gray-500 text-xs mt-2">
                 For now, use manual entry with phone camera or OCR tool
@@ -186,14 +178,13 @@ export function QuickAddContactModal({ isOpen, onClose, onSubmit, workspaceId, u
             </div>
           )}
 
-          {/* Actions */}
           <div className="flex gap-2 pt-4 border-t border-gray-700">
             <button
               type="button"
               onClick={() => setScanMode(!scanMode)}
               className="flex-1 px-4 py-2 text-sm font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 rounded transition-colors"
             >
-              {scanMode ? '← Back' : '📱 Scan'}
+              {scanMode ? 'Back' : 'Scan'}
             </button>
             <button
               type="submit"
