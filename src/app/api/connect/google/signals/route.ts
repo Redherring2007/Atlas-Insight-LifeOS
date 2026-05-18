@@ -31,10 +31,9 @@ export async function GET(request: Request) {
   }
 
   try {
-    const signals = [
-      ...await fetchGmailReadonlySignals(accessToken),
-      ...await fetchGoogleCalendarReadonlySignals(accessToken),
-    ]
+    const gmailSignals = await fetchGmailReadonlySignals(accessToken)
+    const calendarSignals = await fetchGoogleCalendarReadonlySignals(accessToken)
+    const signals = [...gmailSignals, ...calendarSignals]
 
     return NextResponse.json({
       provider: 'Google Workspace',
