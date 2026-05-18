@@ -3,11 +3,14 @@
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { Check, Clock3, DollarSign, Edit3, Mail, MinusCircle, ShieldCheck } from 'lucide-react'
+import { Check, Clock3, DollarSign, Edit3, Mail, MinusCircle, ShieldCheck, Sparkles } from 'lucide-react'
 import { BrandHeader } from '@/components/brand-header'
 import { SideNav } from '@/components/side-nav'
+import type { AtlasActionType, AtlasBrainResponse, AtlasSuggestedAction } from '@/lib/ai/types'
 
 type QueueStatus = 'pending' | 'approved' | 'snoozed' | 'dismissed'
+
+type QueueIcon = 'email' | 'task' | 'risk' | 'crm' | 'finance' | 'project'
 
 interface QueueItem {
   id: string
@@ -15,8 +18,9 @@ interface QueueItem {
   source: string
   reason: string
   impact: string
-  icon: 'email' | 'task' | 'risk' | 'crm' | 'finance' | 'project'
+  icon: QueueIcon
   status: QueueStatus
+  proposed?: boolean
 }
 
 const initialQueue: QueueItem[] = [
@@ -85,10 +89,36 @@ function itemIcon(type: QueueItem['icon']) {
   }
 }
 
+function iconForActionType(type: AtlasActionType): QueueIcon {
+  switch (type) {
+    case 'follow-up': return 'email'
+    case 'schedule': return 'task'
+    case 'brief': return 'risk'
+    case 'summarise': return 'project'
+    case 'check': return 'task'
+    default: return 'task'
+  }
+}
+
+function queueItemFromSuggestion(action: AtlasSuggestedAction, index: number): QueueItem {
+  return {
+    id: `${action.id}-${Date.now()}-${index}`,
+    title: action.title,
+    source: action.source,
+    reason: action.rationale,
+    impact: 'Proposed by Atlas Brain for review only. No external action has been taken.',
+    icon: iconForActionType(action.type),
+    status: 'pending',
+    proposed: true,
+  }
+}
+
 export default function CommandQueuePage() {
   const { data: session, status } = useSession()
   const router = useRouter()
-  const [items, setItems] = useState(initialQueue)
+  const [items, setItems] = useState<QueueItem[]>(initialQueue)
+  const [isSuggesting, setIsSuggesting] = useState(false)
+  const [suggestionMessage, setSuggestionMessage] = useState('')
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -106,6 +136,38 @@ export default function CommandQueuePage() {
     setItems((current) => current.map((item) => item.id === id ? { ...item, status: itemStatus } : item))
   }
 
+  const generateSuggestions = async () => {
+    if (isSuggesting) return
+
+    setIsSuggesting(true)
+    setSuggestionMessage('')
+
+    try {
+      const response = await fetch('/api/atlas-brain', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          mode: 'command_suggestions',
+          message: 'Suggest safe Command Queue actions for review.',
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Atlas Brain suggestion request failed')
+      }
+
+      const data = await response.json() as AtlasBrainResponse
+      const proposedItems = data.suggestedActions.map(queueItemFromSuggestion)
+
+      setItems((current) => [...proposedItems, ...current])
+      setSuggestionMessage(data.metadata.provider === 'ollama' ? 'Atlas Brain proposed actions for review.' : 'Fallback suggestions added for review only.')
+    } catch (error) {
+      setSuggestionMessage(error instanceof Error ? error.message : 'Atlas Brain suggestions are unavailable.')
+    } finally {
+      setIsSuggesting(false)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-[#070B10] text-[#EAF2F8] md:flex">
       <SideNav />
@@ -121,11 +183,25 @@ export default function CommandQueuePage() {
                 Atlas prepares the next useful action, then waits here for approval, editing, snoozing, or dismissal.
               </p>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4">
-              <p className="text-sm text-[#B0C9E0]">Pending</p>
-              <p className="mt-1 text-3xl font-semibold text-white">{pendingCount}</p>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+              <button
+                type="button"
+                onClick={generateSuggestions}
+                disabled={isSuggesting}
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#00AFFF]/40 px-4 py-3 text-sm font-semibold text-[#00D9FF] transition hover:border-[#00D9FF] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <Sparkles className="h-4 w-4" />
+                {isSuggesting ? 'Preparing...' : 'Suggest actions'}
+              </button>
+              <div className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4">
+                <p className="text-sm text-[#B0C9E0]">Pending</p>
+                <p className="mt-1 text-3xl font-semibold text-white">{pendingCount}</p>
+              </div>
             </div>
           </div>
+          {suggestionMessage && (
+            <p className="mt-4 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-[#B0C9E0]">{suggestionMessage}</p>
+          )}
         </section>
 
         <section className="mt-6 grid gap-4">
@@ -142,6 +218,9 @@ export default function CommandQueuePage() {
                       <div className="flex flex-wrap items-center gap-2">
                         <h3 className="text-lg font-semibold text-white">{item.title}</h3>
                         <span className="rounded-full bg-white/5 px-3 py-1 text-xs text-[#B0C9E0]">{item.source}</span>
+                        {item.proposed && (
+                          <span className="rounded-full bg-[#00D9FF]/10 px-3 py-1 text-xs text-[#00D9FF]">Proposed</span>
+                        )}
                         {item.status !== 'pending' && (
                           <span className="rounded-full bg-[#00D9FF]/10 px-3 py-1 text-xs capitalize text-[#00D9FF]">{item.status}</span>
                         )}
