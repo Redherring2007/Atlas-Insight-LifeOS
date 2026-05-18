@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { Activity, AlertCircle, CalendarDays, CheckCircle2, Link2, LockKeyhole, Mail, ShieldCheck } from 'lucide-react'
+import { Activity, CalendarDays, CheckCircle2, Link2, LockKeyhole, Mail, ShieldCheck } from 'lucide-react'
 import { BrandHeader } from '@/components/brand-header'
 import { SideNav } from '@/components/side-nav'
 import { connectionHealthLabel } from '@/lib/connectors/connection-health'
