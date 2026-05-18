@@ -5,14 +5,14 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { ContactCard } from '@/components/contact-card'
 import { QuickAddContactModal } from '@/components/quick-add-contact-modal'
-import { ContactProfile, NewContactProfile } from '@/types'
+import { ContactProfileUi, NewContactProfile } from '@/types'
 import { Plus, Search, Filter } from 'lucide-react'
 
 export default function ContactsPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
-  const [contacts, setContacts] = useState<ContactProfile[]>([])
-  const [filteredContacts, setFilteredContacts] = useState<ContactProfile[]>([])
+  const [contacts, setContacts] = useState<ContactProfileUi[]>([])
+  const [filteredContacts, setFilteredContacts] = useState<ContactProfileUi[]>([])
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [filterStatus, setFilterStatus] = useState<'all' | 'cold' | 'warm' | 'hot'>('all')
@@ -26,8 +26,7 @@ export default function ContactsPage() {
 
   useEffect(() => {
     if (session?.user) {
-      // Mock data - in real app, fetch from API
-      const mockContacts: ContactProfile[] = [
+      const mockContacts: ContactProfileUi[] = [
         {
           id: '1',
           workspaceId: '1',
@@ -41,7 +40,7 @@ export default function ContactsPage() {
           updatedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
           whereMet: 'Tech Conference 2026',
           conversationPoints: 'Interested in partnership for Q2 product launch',
-        } as any,
+        },
         {
           id: '2',
           workspaceId: '1',
@@ -55,12 +54,13 @@ export default function ContactsPage() {
           updatedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
           whereMet: 'LinkedIn',
           conversationPoints: 'Mentioned Series A interest, waiting for metrics',
-        } as any,
+        },
         {
           id: '3',
           workspaceId: '1',
           name: 'Emma Rodriguez',
           email: 'emma@design.studio',
+          phone: null,
           company: 'Design Studio',
           tags: ['designer', 'contract'],
           trustLevel: 2,
@@ -68,20 +68,18 @@ export default function ContactsPage() {
           updatedAt: new Date(),
           whereMet: 'Referral from Alex',
           conversationPoints: 'Referred for branding project, first contact',
-        } as any,
+        },
       ]
-      
+
       setContacts(mockContacts)
       setFilteredContacts(mockContacts)
       setIsLoading(false)
     }
   }, [session?.user])
 
-  // Filter and search
   useEffect(() => {
     let results = contacts
 
-    // Search
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase()
       results = results.filter(c =>
@@ -91,10 +89,9 @@ export default function ContactsPage() {
       )
     }
 
-    // Status filter
     if (filterStatus !== 'all') {
       results = results.filter(c => {
-        const level = c.trustLevel || 5
+        const level = c.trustLevel ?? 5
         if (filterStatus === 'cold') return level <= 3
         if (filterStatus === 'warm') return level > 3 && level <= 7
         if (filterStatus === 'hot') return level > 7
@@ -106,19 +103,24 @@ export default function ContactsPage() {
   }, [searchQuery, filterStatus, contacts])
 
   const handleAddContact = async (newContact: Omit<NewContactProfile, 'id' | 'createdAt' | 'updatedAt'>) => {
-    // In real app, send to API
-    const contact: ContactProfile = {
+    const contact: ContactProfileUi = {
       id: Math.random().toString(),
-      ...newContact,
+      workspaceId: newContact.workspaceId ?? '1',
+      name: newContact.name,
+      email: newContact.email ?? null,
+      phone: newContact.phone ?? null,
+      company: newContact.company ?? null,
+      tags: newContact.tags as string[] | string | null | undefined,
+      trustLevel: newContact.trustLevel ?? 5,
       createdAt: new Date(),
       updatedAt: new Date(),
-    } as any
-    
+    }
+
     setContacts(prev => [contact, ...prev])
     setIsAddModalOpen(false)
   }
 
-  const handleUpdateContact = (contactId: string, updates: Partial<ContactProfile>) => {
+  const handleUpdateContact = (contactId: string, updates: Partial<ContactProfileUi>) => {
     setContacts(prev =>
       prev.map(c =>
         c.id === contactId
@@ -144,11 +146,10 @@ export default function ContactsPage() {
 
   return (
     <div className="min-h-screen bg-gray-900 p-6">
-      {/* Header */}
       <div className="max-w-7xl mx-auto mb-8">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-white mb-2">💼 Contacts & CRM</h1>
+            <h1 className="text-3xl font-bold text-white mb-2">Contacts & CRM</h1>
             <p className="text-gray-400">Business card holder. Track leads, conversations and follow-ups.</p>
           </div>
           <button
@@ -160,7 +161,6 @@ export default function ContactsPage() {
           </button>
         </div>
 
-        {/* Search and Filter */}
         <div className="flex gap-3 flex-wrap">
           <div className="flex-1 min-w-64 relative">
             <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -198,33 +198,31 @@ export default function ContactsPage() {
         </div>
       </div>
 
-      {/* Stats */}
       <div className="max-w-7xl mx-auto mb-6 grid grid-cols-4 gap-4">
         <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
           <div className="text-gray-400 text-sm">Total Contacts</div>
           <div className="text-2xl font-bold text-white">{contacts.length}</div>
         </div>
         <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
-          <div className="text-gray-400 text-sm">🔴 Cold</div>
+          <div className="text-gray-400 text-sm">Cold</div>
           <div className="text-2xl font-bold text-gray-300">
-            {contacts.filter(c => (c.trustLevel || 5) <= 3).length}
+            {contacts.filter(c => (c.trustLevel ?? 5) <= 3).length}
           </div>
         </div>
         <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
-          <div className="text-gray-400 text-sm">🟡 Warm</div>
+          <div className="text-gray-400 text-sm">Warm</div>
           <div className="text-2xl font-bold text-yellow-300">
-            {contacts.filter(c => (c.trustLevel || 5) > 3 && (c.trustLevel || 5) <= 7).length}
+            {contacts.filter(c => (c.trustLevel ?? 5) > 3 && (c.trustLevel ?? 5) <= 7).length}
           </div>
         </div>
         <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
-          <div className="text-gray-400 text-sm">🔥 Hot</div>
+          <div className="text-gray-400 text-sm">Hot</div>
           <div className="text-2xl font-bold text-red-300">
-            {contacts.filter(c => (c.trustLevel || 5) > 7).length}
+            {contacts.filter(c => (c.trustLevel ?? 5) > 7).length}
           </div>
         </div>
       </div>
 
-      {/* Contacts Grid */}
       <div className="max-w-7xl mx-auto">
         {filteredContacts.length === 0 ? (
           <div className="text-center py-12">
@@ -255,7 +253,6 @@ export default function ContactsPage() {
         )}
       </div>
 
-      {/* Add Contact Modal */}
       <QuickAddContactModal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
