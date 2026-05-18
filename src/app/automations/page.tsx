@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Zap, Plus, Filter } from 'lucide-react'
+import { Zap, Plus } from 'lucide-react'
 import { RuleCard } from '@/components/rule-card'
 import { RuleBuilder } from '@/components/rule-builder'
 
@@ -16,6 +16,8 @@ interface Rule {
   lastExecuted?: string
   category: 'email' | 'task' | 'finance' | 'calendar' | 'contact'
 }
+
+type NewRuleInput = Omit<Rule, 'id' | 'isActive' | 'executionCount' | 'lastExecuted'>
 
 const mockRules: Rule[] = [
   {
@@ -88,7 +90,7 @@ export default function AutomationsPage() {
     return true
   })
 
-  const handleCreateRule = (newRule: any) => {
+  const handleCreateRule = (newRule: NewRuleInput) => {
     const rule: Rule = {
       id: Date.now().toString(),
       ...newRule,
@@ -99,7 +101,6 @@ export default function AutomationsPage() {
   }
 
   const handleEditRule = (id: string) => {
-    // In real app, would open builder with rule pre-filled
     console.log('Edit rule:', id)
   }
 
@@ -116,7 +117,6 @@ export default function AutomationsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
       <div className="bg-white border-b border-gray-200 px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
@@ -136,7 +136,6 @@ export default function AutomationsPage() {
         </div>
       </div>
 
-      {/* Stats */}
       <div className="px-6 py-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
@@ -170,7 +169,6 @@ export default function AutomationsPage() {
           </div>
         </div>
 
-        {/* Search & Filter */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
             <div className="flex-1">
@@ -211,7 +209,6 @@ export default function AutomationsPage() {
           </div>
         </div>
 
-        {/* Rules List */}
         <div className="space-y-4">
           {filteredRules.length > 0 ? (
             filteredRules.map(rule => (
@@ -238,30 +235,28 @@ export default function AutomationsPage() {
         </div>
       </div>
 
-      {/* Rule Builder Modal */}
       <RuleBuilder
         isOpen={isBuilderOpen}
         onClose={() => setIsBuilderOpen(false)}
         onSave={handleCreateRule}
       />
 
-      {/* Template Suggestions */}
       <div className="px-6 pb-6">
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <h3 className="text-lg font-medium text-gray-900 mb-4">Popular Templates</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {[
-              { icon: '📧', name: 'Email to Task', description: 'Convert urgent emails into tasks' },
-              { icon: '💰', name: 'Invoice Follow-up', description: 'Remind about overdue invoices' },
-              { icon: '📅', name: 'Meeting Prep', description: 'Notify before meetings start' },
-              { icon: '👥', name: 'Contact Update', description: 'Update contact status automatically' }
+              { icon: 'Email', name: 'Email to Task', description: 'Convert urgent emails into tasks' },
+              { icon: 'Finance', name: 'Invoice Follow-up', description: 'Remind about overdue invoices' },
+              { icon: 'Calendar', name: 'Meeting Prep', description: 'Notify before meetings start' },
+              { icon: 'Contact', name: 'Contact Update', description: 'Update contact status automatically' }
             ].map((template, index) => (
               <button
                 key={index}
                 className="p-4 border border-gray-200 rounded-lg hover:border-purple-300 hover:bg-purple-50 transition-colors text-left"
               >
                 <div className="flex items-start">
-                  <span className="text-2xl mr-3">{template.icon}</span>
+                  <span className="text-sm font-semibold text-purple-600 mr-3">{template.icon}</span>
                   <div>
                     <p className="font-medium text-gray-900">{template.name}</p>
                     <p className="text-sm text-gray-600">{template.description}</p>
