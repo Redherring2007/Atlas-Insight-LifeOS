@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-05-18 - LifeOS Shell Simplification
+- Simplified primary navigation to Home, Ask Atlas, Command Queue, Modules, and Settings.
+- Rebuilt Home as a calm operational surface with Ask Atlas, Today’s Focus, Command Queue preview, Daily Brief, module preview, and two strategic signals.
+- Added Ask Atlas page as an AI-ready operational brain interface prepared for future local Atlas Brain integration.
+- Added Command Queue page with mock approval cards and safe shell actions: Approve, Edit, Snooze, Dismiss.
+- Added Modules launcher for Atlas Projects, CRM, Verify, Risk, Finance, Vault, Connect, and MyLife.
+- Preserved underlying prototype routes while hiding complexity from the top-level shell.
+
 ## 2026-05-18 - TypeScript Hardening Stabilisation
 - Added NextAuth session/JWT/User type augmentation for stable `session.user.id` and `session.user.role` usage.
 - Added display-safe helpers for nullable strings, dates, and decimal money fields.
