@@ -1,13 +1,11 @@
 'use client'
 
-import { WorkspaceMember } from '@/types'
+import { WorkspaceMemberUi } from '@/types'
 import { User, Mail, Calendar, TrendingUp } from 'lucide-react'
+import { displayDate, displayString } from '@/lib/display'
 
 interface TeamMemberCardProps {
-  member: WorkspaceMember & {
-    user?: { name: string; email: string }
-    workload?: { total: number; pending: number; overdue: number }
-  }
+  member: WorkspaceMemberUi
   onRemove?: (memberId: string) => void
 }
 
@@ -24,9 +22,9 @@ export function TeamMemberCard({ member, onRemove }: TeamMemberCardProps) {
           </div>
           <div>
             <h3 className="text-lg font-semibold text-white">
-              {member.user?.name || 'Unknown User'}
+              {displayString(member.user?.name, 'Unknown User')}
             </h3>
-            <p className="text-sm text-gray-400 capitalize">{member.role}</p>
+            <p className="text-sm text-gray-400 capitalize">{displayString(member.role, 'member')}</p>
           </div>
         </div>
         {onRemove && (
@@ -40,19 +38,17 @@ export function TeamMemberCard({ member, onRemove }: TeamMemberCardProps) {
         )}
       </div>
 
-      {/* Contact info */}
       <div className="space-y-2 mb-4">
         <div className="flex items-center space-x-2 text-sm text-gray-300">
           <Mail size={14} className="text-blue-400" />
-          <span>{member.user?.email || 'No email'}</span>
+          <span>{displayString(member.user?.email, 'No email')}</span>
         </div>
         <div className="flex items-center space-x-2 text-sm text-gray-300">
           <Calendar size={14} className="text-green-400" />
-          <span>Joined {new Date(member.joinedAt).toLocaleDateString()}</span>
+          <span>Joined {displayDate(member.joinedAt)}</span>
         </div>
       </div>
 
-      {/* Workload */}
       <div className="border-t border-gray-700 pt-3">
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm text-gray-400">Workload</span>
