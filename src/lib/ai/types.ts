@@ -1,16 +1,10 @@
+import type { OperationalSnapshot, OperationalState } from '@/lib/context/types'
+
 export type AtlasBrainMode = 'ask' | 'daily_brief' | 'command_suggestions' | 'operational_summary' | 'focus'
 
 export type AtlasBrainProvider = 'ollama' | 'fallback'
 
 export type AtlasActionType = 'follow-up' | 'review' | 'schedule' | 'brief' | 'check' | 'summarise'
-
-export interface AtlasOperationalContext {
-  priorities: string[]
-  blockers: string[]
-  opportunities: string[]
-  riskNotes: string[]
-  commandQueue: string[]
-}
 
 export interface AtlasSuggestedAction {
   id: string
@@ -24,7 +18,7 @@ export interface AtlasSuggestedAction {
 export interface AtlasBrainRequest {
   mode: AtlasBrainMode
   message?: string
-  context?: AtlasOperationalContext
+  context?: OperationalState
 }
 
 export interface AtlasBrainMetadata {
@@ -39,6 +33,7 @@ export interface AtlasBrainMetadata {
 export interface AtlasBrainResponse {
   text: string
   suggestedActions: AtlasSuggestedAction[]
+  contextSnapshot: OperationalSnapshot
   metadata: AtlasBrainMetadata
 }
 
