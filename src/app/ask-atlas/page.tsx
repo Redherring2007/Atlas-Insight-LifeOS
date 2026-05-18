@@ -7,13 +7,15 @@ import { useEffect, useState } from 'react'
 import { ArrowRight, Brain, CheckSquare, ClipboardList, FileText, Send, ShieldCheck, Sparkles } from 'lucide-react'
 import { BrandHeader } from '@/components/brand-header'
 import { SideNav } from '@/components/side-nav'
+import type { AtlasBrainMode, AtlasBrainResponse } from '@/lib/ai/types'
 
 const prompts = [
   'What should I focus on today?',
-  'Summarise my business position.',
+  'Generate my Daily Brief.',
   'What needs approval?',
-  'Prepare my daily brief.',
+  'Summarise my operational position.',
   'What risks or blockers should I know about?',
+  'Suggest Command Queue actions.',
 ]
 
 const helpCards = [
@@ -39,10 +41,24 @@ const helpCards = [
   },
 ]
 
+function modeForPrompt(prompt: string): AtlasBrainMode {
+  const normalized = prompt.toLowerCase()
+
+  if (normalized.includes('daily brief')) return 'daily_brief'
+  if (normalized.includes('approval') || normalized.includes('command queue')) return 'command_suggestions'
+  if (normalized.includes('operational position') || normalized.includes('business position')) return 'operational_summary'
+  if (normalized.includes('focus')) return 'focus'
+
+  return 'ask'
+}
+
 export default function AskAtlasPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
   const [input, setInput] = useState('')
+  const [response, setResponse] = useState<AtlasBrainResponse | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -52,6 +68,38 @@ export default function AskAtlasPage() {
 
   if (status === 'loading' || !session) {
     return <div className="min-h-screen bg-[#070B10] text-[#EAF2F8] flex items-center justify-center">Loading...</div>
+  }
+
+  const submitPrompt = async (promptOverride?: string) => {
+    const message = (promptOverride ?? input).trim()
+    if (!message || isLoading) return
+
+    setInput(message)
+    setIsLoading(true)
+    setError('')
+
+    try {
+      const atlasResponse = await fetch('/api/atlas-brain', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message,
+          mode: modeForPrompt(message),
+        }),
+      })
+
+      if (!atlasResponse.ok) {
+        throw new Error('Atlas Brain request failed')
+      }
+
+      const data = await atlasResponse.json() as AtlasBrainResponse
+      setResponse(data)
+    } catch (requestError) {
+      setError(requestError instanceof Error ? requestError.message : 'Atlas Brain is unavailable')
+      setResponse(null)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -66,12 +114,12 @@ export default function AskAtlasPage() {
               <p className="text-xs uppercase tracking-[0.3em] text-[#00D9FF]">Atlas Brain</p>
               <h2 className="mt-3 text-3xl font-semibold leading-tight text-white sm:text-4xl">Ask Atlas to turn operational noise into your next clear move.</h2>
               <p className="mt-4 text-sm leading-6 text-[#B0C9E0]">
-                Atlas Brain is prepared for local Ollama integration through `atlas-brain` on qwen3:8b. This shell keeps autonomy controlled: suggestions first, approvals through Command Queue.
+                Atlas Brain can prepare summaries, briefs, focus analysis, and approval-ready suggestions. You stay in control: actions move through Command Queue before anything happens.
               </p>
             </div>
             <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm leading-6 text-[#B0C9E0] lg:max-w-sm">
               <p className="font-semibold text-white">AI-ready, approval-led</p>
-              <p className="mt-2">Atlas can prepare work, but execution remains explicit and visible.</p>
+              <p className="mt-2">Live responses use the local Atlas Brain model when available, with safe fallback when it is not.</p>
             </div>
           </div>
 
@@ -86,11 +134,16 @@ export default function AskAtlasPage() {
             <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-2 text-xs text-[#8FA3B8]">
                 <Sparkles className="h-4 w-4 text-[#00D9FF]" />
-                <span>Responses will be routed through controlled Atlas Brain orchestration later.</span>
+                <span>{response?.metadata.provider === 'fallback' ? 'Fallback mode is active; no action was executed.' : 'Atlas prepares suggestions for review, not automatic execution.'}</span>
               </div>
-              <button className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#00AFFF] px-5 py-3 text-sm font-semibold text-[#061019] transition hover:bg-[#00D9FF]">
+              <button
+                type="button"
+                onClick={() => submitPrompt()}
+                disabled={isLoading || !input.trim()}
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#00AFFF] px-5 py-3 text-sm font-semibold text-[#061019] transition hover:bg-[#00D9FF] disabled:cursor-not-allowed disabled:opacity-50"
+              >
                 <Send className="h-4 w-4" />
-                Prepare response
+                {isLoading ? 'Preparing...' : 'Ask Atlas'}
               </button>
             </div>
           </div>
@@ -100,7 +153,7 @@ export default function AskAtlasPage() {
               <button
                 key={prompt}
                 type="button"
-                onClick={() => setInput(prompt)}
+                onClick={() => submitPrompt(prompt)}
                 className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-[#B0C9E0] transition hover:border-[#00AFFF] hover:text-white"
               >
                 {prompt}
@@ -108,6 +161,38 @@ export default function AskAtlasPage() {
             ))}
           </div>
         </section>
+
+        {(response || error) && (
+          <section className="mt-6 rounded-3xl border border-white/10 bg-[#111821]/90 p-5 sm:p-6">
+            <div className="flex flex-wrap items-center gap-3">
+              <Brain className="h-5 w-5 text-[#00D9FF]" />
+              <h3 className="text-lg font-semibold text-white">Atlas response</h3>
+              {response && (
+                <span className="rounded-full bg-white/5 px-3 py-1 text-xs capitalize text-[#B0C9E0]">
+                  {response.metadata.provider === 'ollama' ? 'Live Atlas Brain' : 'Safe fallback'}
+                </span>
+              )}
+            </div>
+            {error ? (
+              <p className="mt-4 text-sm leading-6 text-[#FFB4A8]">{error}</p>
+            ) : (
+              <>
+                <p className="mt-4 whitespace-pre-wrap text-sm leading-6 text-[#D7E7F5]">{response?.text}</p>
+                {response && response.suggestedActions.length > 0 && (
+                  <div className="mt-5 grid gap-3 lg:grid-cols-2">
+                    {response.suggestedActions.map((action) => (
+                      <div key={action.id} className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                        <p className="text-sm font-semibold text-white">{action.title}</p>
+                        <p className="mt-2 text-sm leading-6 text-[#B0C9E0]">{action.rationale}</p>
+                        <p className="mt-3 text-xs uppercase tracking-[0.2em] text-[#00D9FF]">Proposed only</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
+          </section>
+        )}
 
         <section className="mt-6 grid gap-4 lg:grid-cols-2">
           {helpCards.map((card) => {
