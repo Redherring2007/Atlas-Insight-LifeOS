@@ -67,11 +67,11 @@ const modules = [
   },
   {
     name: 'Atlas Connect',
-    purpose: 'Approved integrations/connectors for email, calendar, finance, CRM and external systems.',
-    description: 'Keeps external systems connected beneath the shell without exposing backend complexity.',
+    purpose: 'Read-only connector layer for approved email and calendar accounts.',
+    description: 'Reviews approved connected accounts for operational signals such as meetings, travel, urgent follow-ups, blockers and schedule pressure.',
     status: 'Coming Soon' as ModuleStatus,
-    href: '/modules',
-    cta: 'View plan',
+    href: '/connect',
+    cta: 'Prepare setup',
     icon: Link2,
   },
   {
