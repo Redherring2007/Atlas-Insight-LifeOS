@@ -62,3 +62,52 @@ export type NewDelegationRule = typeof delegationRules.$inferInsert;
 
 export type DailyBriefing = typeof dailyBriefings.$inferSelect;
 export type NewDailyBriefing = typeof dailyBriefings.$inferInsert;
+
+export type LeadStatus = 'cold' | 'warm' | 'hot';
+export type InvoiceStatus = 'pending' | 'paid' | 'overdue';
+export type HandoffStatus = 'pending' | 'accepted' | 'completed' | 'rejected';
+export type TaskStatus = 'todo' | 'in-progress' | 'done';
+export type TaskPriority = 'high' | 'medium' | 'low';
+export type EmailUrgency = 'high' | 'medium' | 'low';
+
+export type ContactProfileUi = ContactProfile & {
+  tags?: string[] | string | null;
+  whereMet?: string | null;
+  conversationPoints?: string | null;
+};
+
+export type EmailUi = Email & {
+  receivedAt?: Date | null;
+  updatedAt?: Date | null;
+  read?: boolean;
+  urgency?: EmailUrgency | null;
+  linkedProject?: string | null;
+  preview?: string | null;
+  tags?: string[];
+};
+
+export type TeamHandoffUi = TeamHandoff & {
+  status?: HandoffStatus;
+  updatedAt?: Date | null;
+  fromUser?: string;
+  toUser?: string;
+  taskTitle?: string;
+  priority?: TaskPriority | string | null;
+  dueDate?: Date | null;
+};
+
+export type WorkspaceMemberUi = WorkspaceMember & {
+  user?: {
+    name?: string | null;
+    email?: string | null;
+  };
+  workload?: {
+    total: number;
+    pending: number;
+    overdue: number;
+  };
+};
+
+export type CalendarEventUi = CalendarEvent & {
+  type?: string | null;
+};
