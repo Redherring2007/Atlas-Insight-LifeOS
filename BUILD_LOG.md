@@ -1,81 +1,70 @@
 # Atlas LifeOS Build Log
 
-## Stage: TypeScript Hardening Stabilisation
-Date/time: 2026-05-18 12:51 Asia/Dubai
-Branch: stabilisation/typescript-hardening
+## Stage: LifeOS Shell Simplification
+Date/time: 2026-05-18 13:25 Asia/Dubai
+Branch: architecture/lifeos-shell-simplification
 
 ### Files Created
-- `src/types/next-auth.d.ts`
-- `src/lib/display.ts`
+- `src/app/ask-atlas/page.tsx`
+- `src/app/command-queue/page.tsx`
+- `src/app/modules/page.tsx`
+
+### Files Changed
+- `src/components/side-nav.tsx`
+- `src/app/dashboard/page.tsx`
 - `BUILD_LOG.md`
 - `BUILD_STATE.md`
 - `CHANGELOG.md`
 - `QA.md`
-- `DATA_MODEL.md`
-
-### Files Changed
-- `src/lib/auth.ts`
-- `src/types/index.ts`
-- `src/app/contacts/page.tsx`
-- `src/app/emails/page.tsx`
-- `src/app/finance/page.tsx`
-- `src/app/teams/page.tsx`
-- `src/components/calendar-view.tsx`
-- `src/components/contact-card.tsx`
-- `src/components/create-handoff-modal.tsx`
-- `src/components/email-card.tsx`
-- `src/components/handoff-card.tsx`
-- `src/components/invoice-card.tsx`
-- `src/components/project-card.tsx`
-- `src/components/quick-add-contact-modal.tsx`
-- `src/components/task-card.tsx`
-- `src/components/team-member-card.tsx`
 - `BUILD_STATUS.md`
 
 ### Database / Schema / Migration Changes
-- No database schema or migration files changed.
-- Drizzle-inferred nullable and decimal types were preserved.
-- UI-only extension types were added for demo fields that are not part of the persisted schema.
+- No database schema or migration changes.
+- No backend orchestration, autonomous execution, external integrations, or memory systems added.
 
 ### Routes / Screens / Components Changed
-- Contacts: typed demo contact metadata and null-safe card rendering.
-- Emails: typed demo triage metadata and null-safe search/card rendering.
-- Finance: decimal mock values now use schema-compatible strings.
-- Teams/Handoffs: handoff status is treated as UI-derived state instead of a persisted schema field.
-- Calendar, task, project, invoice cards: nullable status/date/priority fields are normalized before rendering.
+- `/dashboard`: redesigned as calm Home surface.
+- `/ask-atlas`: added AI-ready operational brain interface.
+- `/command-queue`: added approval/action shell with mock actions.
+- `/modules`: added Atlas module launcher.
+- `SideNav`: simplified to Home, Ask Atlas, Command Queue, Modules, Settings with mobile bottom navigation.
 
 ### Key Decisions Made
-- Kept TypeScript strictness intact.
-- Added NextAuth module augmentation instead of casting `session.user` repeatedly.
-- Preserved existing UI behaviour while making schema boundaries explicit.
-- Used small display helpers for safe string/date/money rendering.
-- Did not restructure the LifeOS shell or remove pages.
+- Kept underlying prototype routes intact instead of deleting capability.
+- Hid project/contact/finance/calendar/team/automation complexity behind Modules and Command Queue.
+- Positioned ATLAS as universal operational intelligence for business and personal life management.
+- Kept Atlas Brain future-ready while avoiding uncontrolled autonomy or execution loops.
+- Used calm, non-alarmist language for risk and resilience.
+- Avoided SafeHaven, security-contractor, trading-bot, travel-only, or investigation-platform positioning.
 
 ### Tests / Checks Run
-- Requested checks: `git status --short`, `npx tsc --noEmit`, `npm run build`.
-- Local shell was unavailable in this environment, so checks could not be executed here.
-- Repository inspection and file edits were performed through the GitHub connector on the target branch.
+- Required preflight docs read: `ARCHITECTURE.md`, `MODULE_MAP.md`, `CODEX_TASKS.md`, `BUILD_STATUS.md`, `BUILD_LOG.md`, `BUILD_STATE.md`, `CHANGELOG.md`, `QA.md`.
+- Attempted `git status --short`.
+- Attempted `npx tsc --noEmit`.
+- Attempted `DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder" npm run build`.
 
 ### Errors Encountered
-- Local command execution could not start `/bin/bash` or `/bin/sh` in this environment.
-- GitHub code search is not indexed for this repository, so files were inspected through direct branch paths and GitHub directory views.
+- Local shell execution still cannot start `/bin/bash`; each validation command failed before repo or Node execution with `No such file or directory (os error 2)`.
+- The requested branch was not present on GitHub at the start of the pass, so `architecture/lifeos-shell-simplification` was created from `stabilisation/typescript-hardening` head.
 
 ### Fixes Applied
-- Added NextAuth session/JWT/User type augmentation.
-- Hardened auth callback fallbacks for role and user id.
-- Added UI-safe type extensions for contact, email, team member, handoff, and calendar event display data.
-- Replaced finance mock numbers with schema-compatible decimal strings.
-- Normalized nullable status, priority, type, and date values before display.
-- Removed reliance on broad casts in the updated contact, email, and teams flows.
+- Reduced primary navigation to the five LifeOS shell destinations.
+- Added mobile navigation for the same five destinations.
+- Replaced crowded dashboard structure with focused Home information architecture.
+- Added Ask Atlas prompt surface, suggested operational prompts, and queue-oriented framing.
+- Added Command Queue mock approval cards with Approve, Edit, Snooze, and Dismiss actions.
+- Added Modules page for Atlas Projects, CRM, Verify, Risk, Finance, Vault, Connect, and MyLife.
 
 ### Known Issues
-- Validation must still be run in an environment with a working Node/local shell.
-- Some legacy pages still contain product-scope UI that should be simplified in the next LifeOS shell task, but that was intentionally out of scope for this stabilisation pass.
+- TypeScript and production build validation still need to run in a working local or CI environment.
+- Existing legacy/prototype routes remain available and may still contain older visual language because this pass only simplified the shell surface.
+- Command Queue actions are local mock state only.
 
 ### Remaining TODOs
-- Run `npx tsc --noEmit` locally or in CI.
-- Run `npm run build` locally or in CI.
-- Address any residual compiler findings from files not reachable through local execution.
+- Run `npx tsc --noEmit`.
+- Run `DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder" npm run build`.
+- If validation passes, use this shell as the base for future Atlas Brain integration.
+- If validation fails, fix remaining compile/build issues without broadening product scope.
 
 ### Exact Next Step
-Run `npx tsc --noEmit` on `stabilisation/typescript-hardening`, then run `npm run build`; if both pass, continue with the LifeOS shell simplification task.
+Run the required TypeScript and build checks in a working execution environment, then address any compiler output before starting backend Atlas Brain orchestration work.
