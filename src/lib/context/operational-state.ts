@@ -1,3 +1,6 @@
+import { extractGoogleCalendarReadonlySignals, mockGoogleCalendarEvents } from '@/lib/connectors/google/calendar-readonly'
+import { extractGmailReadonlySignals, mockGoogleGmailMessages } from '@/lib/connectors/google/gmail-readonly'
+import { mockConnectedAccounts, mockConnectorSignals } from '@/lib/connectors/mock-connected-accounts'
 import { buildConnectorSignalSummary } from '@/lib/connectors/signal-extraction'
 import { buildCalendarContext } from './calendar'
 import { buildCommandQueueContext } from './command-queue'
@@ -10,6 +13,14 @@ import { buildRiskContext } from './risk'
 import { buildTaskContext } from './tasks'
 import type { OperationalSnapshot, OperationalState } from './types'
 
+function buildConnectorSignalsForContext() {
+  return [
+    ...mockConnectorSignals,
+    ...extractGmailReadonlySignals(mockGoogleGmailMessages),
+    ...extractGoogleCalendarReadonlySignals(mockGoogleCalendarEvents),
+  ]
+}
+
 export function buildOperationalState(): OperationalState {
   const tasks = buildTaskContext()
   const projects = buildProjectContext()
@@ -17,7 +28,7 @@ export function buildOperationalState(): OperationalState {
   const finance = buildFinanceContext()
   const calendar = buildCalendarContext()
   const risk = buildRiskContext()
-  const connectors = buildConnectorSignalSummary()
+  const connectors = buildConnectorSignalSummary(mockConnectedAccounts, buildConnectorSignalsForContext())
   const priorities = buildPriorityContext()
   const focusAnalysis = buildFocusAnalysisContext()
 

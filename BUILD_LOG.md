@@ -1,5 +1,97 @@
 # Atlas LifeOS Build Log
 
+## Stage: Google Workspace Read-Only Adapter Foundation
+Date/time: 2026-05-18 19:05 Asia/Dubai
+Branch: feature/google-workspace-readonly-adapter
+
+### Files Created
+- `src/lib/connectors/google/types.ts`
+- `src/lib/connectors/google/config.ts`
+- `src/lib/connectors/google/oauth.ts`
+- `src/lib/connectors/google/gmail-readonly.ts`
+- `src/lib/connectors/google/calendar-readonly.ts`
+- `src/lib/connectors/google/signal-mapper.ts`
+- `src/lib/connectors/google/health.ts`
+- `src/lib/connectors/google/index.ts`
+- `src/app/api/connect/google/start/route.ts`
+- `src/app/api/connect/google/callback/route.ts`
+- `src/app/api/connect/google/health/route.ts`
+- `src/app/api/connect/google/signals/route.ts`
+
+### Files Changed
+- `.env.example`
+- `src/app/connect/page.tsx`
+- `src/lib/connectors/types.ts`
+- `src/lib/connectors/mock-connected-accounts.ts`
+- `src/lib/connectors/signal-extraction.ts`
+- `src/lib/context/operational-state.ts`
+- `BUILD_LOG.md`
+- `BUILD_STATE.md`
+- `CHANGELOG.md`
+- `QA.md`
+- `BUILD_STATUS.md`
+
+### Database / Schema / Migration Changes
+- No database schema or migration changes.
+- No token persistence, credential storage, account table, sync job, webhook, or migration added.
+- No write scopes, email sending, calendar editing, event creation, deleting, archiving, mark-read, auto-responding, payments, or external automation added.
+
+### Routes / Screens / Components Changed
+- `/connect`: added Google Workspace read-only adapter section with Connect Google action, mock-safe state, supported signal types, scope display, and safety boundary.
+- `/api/connect/google/start`: returns Google OAuth URL when read-only env is configured; otherwise returns mock-safe setup notes.
+- `/api/connect/google/callback`: accepts OAuth callback shape, exchanges code only when configured, never persists or returns tokens.
+- `/api/connect/google/health`: reports adapter readiness, scopes, and safety boundaries.
+- `/api/connect/google/signals`: maps live read-only access token data when supplied, otherwise returns sanitised mock Google signals.
+- Operational Context Engine: includes mock Google Gmail/Calendar signals in connector summaries without requiring live Google access.
+
+### Key Decisions Made
+- Built Google as the first provider-specific adapter behind the provider-neutral Atlas Connect interfaces.
+- Used read-only scopes only: `gmail.readonly`, `calendar.readonly`, plus OpenID/email/profile for identity consent.
+- Added a scope guard so OAuth will not start if non-read-only scopes are configured.
+- Kept token handling deliberately non-persistent; callback returns only a sanitised token summary.
+- Mapped Gmail metadata/snippets and Google Calendar event metadata into operational signals instead of storing full email bodies or invasive content.
+- Kept `/api/connect/google/signals` mock-safe when OAuth env or bearer token is absent.
+- Preserved Command Queue approval-only boundaries and avoided autonomous execution.
+
+### Tests / Checks Run
+- Read required docs: `ARCHITECTURE.md`, `MODULE_MAP.md`, `BUILD_LOG.md`, `BUILD_STATE.md`, `CHANGELOG.md`, `QA.md`, `BUILD_STATUS.md`, `CLEANUP_AUDIT.md`.
+- Attempted `git status --short`.
+- Attempted `npx tsc --noEmit`.
+- Attempted `DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder" npm run build`.
+- Reviewed and updated branch files through the GitHub connector because local shell execution is unavailable.
+
+### Errors Encountered
+- Local shell execution still cannot start `/bin/bash`; validation commands failed before Git, TypeScript, Node, or Next.js could run with `No such file or directory (os error 2)`.
+- Browser QA and live Google OAuth smoke tests could not run from this environment.
+- `feature/google-workspace-readonly-adapter` did not exist at the start of the pass, so it was created from `feature/read-only-connectors-foundation`.
+
+### Fixes Applied
+- Added Google OAuth URL, token exchange, refresh helper, and read-only scope helpers.
+- Added Gmail read-only metadata/snippet sanitisation and signal extraction.
+- Added Google Calendar read-only event metadata sanitisation and signal extraction.
+- Added Google adapter health reporting and mock-safe signals route.
+- Added connector signal types for meeting changes and deadlines.
+- Updated connector summary counting to include Google meeting changes and deadlines.
+- Updated `/connect` with Google Workspace adapter UI and safety language.
+- Updated `.env.example` with Google read-only connector variables.
+
+### Known Issues
+- TypeScript and production build validation still need to run in a working local or CI environment.
+- Google OAuth is foundation-only and does not persist tokens.
+- Live Google signal extraction requires a bearer access token supplied manually to the signals route; no stored connection session exists yet.
+- Gmail extraction uses message metadata/snippets only and does not store full message bodies.
+- Calendar extraction uses event metadata only and does not edit events.
+
+### Remaining TODOs
+- Run `npx tsc --noEmit` in a working environment.
+- Run `DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder" npm run build` in a working environment.
+- Smoke test `/api/connect/google/health`, `/api/connect/google/start`, `/api/connect/google/callback`, and `/api/connect/google/signals`.
+- Add secure token storage, encryption, consent audit trail, account linking, and revoke/disconnect flow before production OAuth use.
+- Add provider-specific Google scope review before requesting verification or moving beyond local development.
+
+### Exact Next Step
+Run TypeScript/build validation and smoke test the Google mock-safe API routes in CI or a working shell, then design secure token persistence and account-linking before enabling live Google connections for users.
+
 ## Stage: Read-Only Universal Connector Foundation
 Date/time: 2026-05-18 18:05 Asia/Dubai
 Branch: feature/read-only-connectors-foundation

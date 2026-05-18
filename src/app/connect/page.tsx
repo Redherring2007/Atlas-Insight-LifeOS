@@ -12,16 +12,35 @@ import { detectConnectorProvider } from '@/lib/connectors/provider-detection'
 import { signalsForAccount } from '@/lib/connectors/signal-extraction'
 import type { ProviderDetectionResult } from '@/lib/connectors/types'
 
+interface GoogleHealthState {
+  configured: boolean
+  status: string
+  scopes: string[]
+  warnings: string[]
+}
+
 const signalLabels = [
   'Meetings',
+  'Meeting changes',
   'Travel mentions',
   'Urgent follow-ups',
   'Client opportunities',
   'Finance pressure',
   'Schedule pressure',
   'Operational blockers',
+  'Deadlines',
   'Risk awareness',
   'Personal/work clashes',
+]
+
+const googleSignalLabels = [
+  'Gmail metadata and snippets',
+  'Google Calendar event metadata',
+  'Meeting preparation',
+  'Travel mentions',
+  'Urgent follow-ups',
+  'Finance pressure',
+  'Schedule pressure',
 ]
 
 function confidenceLabel(confidence: number) {
@@ -44,6 +63,8 @@ export default function ConnectPage() {
   const router = useRouter()
   const [accountInput, setAccountInput] = useState('operator@gmail.com')
   const [detection, setDetection] = useState<ProviderDetectionResult | null>(null)
+  const [googleHealth, setGoogleHealth] = useState<GoogleHealthState | null>(null)
+  const [googleMessage, setGoogleMessage] = useState('')
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -56,6 +77,43 @@ export default function ConnectPage() {
   useEffect(() => {
     setDetection(detectedResult)
   }, [detectedResult])
+
+  useEffect(() => {
+    let active = true
+
+    fetch('/api/connect/google/health')
+      .then((response) => response.json())
+      .then((payload) => {
+        if (!active) return
+        const health = payload.health as GoogleHealthState | undefined
+        if (health) setGoogleHealth(health)
+      })
+      .catch(() => {
+        if (active) setGoogleMessage('Google adapter health is unavailable in this environment.')
+      })
+
+    return () => {
+      active = false
+    }
+  }, [])
+
+  async function startGoogleConnect() {
+    setGoogleMessage('Preparing Google read-only connection...')
+
+    try {
+      const response = await fetch('/api/connect/google/start')
+      const payload = await response.json() as { authUrl?: string | null, configured?: boolean, setupNotes?: string[] }
+
+      if (payload.authUrl) {
+        window.location.href = payload.authUrl
+        return
+      }
+
+      setGoogleMessage(payload.setupNotes?.join(' ') ?? 'Google OAuth is not configured yet. Mock-safe mode remains active.')
+    } catch {
+      setGoogleMessage('Google read-only connection could not start. Mock-safe mode remains active.')
+    }
+  }
 
   if (status === 'loading' || !session) {
     return <div className="min-h-screen bg-[#070B10] text-[#EAF2F8] flex items-center justify-center">Loading...</div>
@@ -73,7 +131,7 @@ export default function ConnectPage() {
               <p className="text-xs uppercase tracking-[0.3em] text-[#00D9FF]">Atlas Connect</p>
               <h2 className="mt-3 max-w-3xl text-3xl font-semibold leading-tight text-white sm:text-4xl">Tell Atlas the account. Atlas identifies the safest read-only path.</h2>
               <p className="mt-4 max-w-3xl text-sm leading-6 text-[#B0C9E0]">
-                Atlas reviews approved connected accounts for operational signals such as meetings, travel, urgent follow-ups, blockers and schedule pressure. This foundation uses mock data only and never sends, deletes, edits, auto-responds, creates events, or changes account settings.
+                Atlas reviews approved connected accounts for operational signals only. This foundation prepares read-only email and calendar signals and never sends, deletes, edits, auto-responds, creates events, or changes account settings.
               </p>
             </div>
             <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm leading-6 text-[#B0C9E0]">
@@ -81,7 +139,67 @@ export default function ConnectPage() {
                 <LockKeyhole className="h-5 w-5 text-[#00D9FF]" />
                 <p className="font-semibold">Read-only first</p>
               </div>
-              <p className="mt-3">OAuth and live provider connections come later. This pass only prepares neutral provider detection and signal summaries.</p>
+              <p className="mt-3">Google Workspace is the first real adapter path. Token persistence is intentionally not implemented in this pass.</p>
+            </div>
+          </div>
+        </section>
+
+        <section className="mt-6 rounded-3xl border border-[#00D9FF]/20 bg-[#111821]/90 p-5 sm:p-6">
+          <div className="grid gap-5 xl:grid-cols-[1fr_0.8fr]">
+            <div>
+              <div className="flex flex-wrap items-center gap-3">
+                <div className="grid h-11 w-11 place-items-center rounded-2xl bg-[#00D9FF]/10 text-[#00D9FF]">
+                  <Mail className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-xs uppercase tracking-[0.25em] text-[#00D9FF]">First adapter path</p>
+                  <h3 className="mt-1 text-xl font-semibold text-white">Google Workspace read-only</h3>
+                </div>
+              </div>
+              <p className="mt-4 max-w-3xl text-sm leading-6 text-[#B0C9E0]">
+                Connect Gmail and Google Calendar later with read-only scopes so Atlas can prepare operational signals from approved account metadata, snippets, and calendar event metadata.
+              </p>
+              <div className="mt-5 flex flex-wrap gap-3">
+                <button
+                  type="button"
+                  onClick={startGoogleConnect}
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#00AFFF] px-5 py-3 text-sm font-semibold text-[#061019] transition hover:bg-[#00D9FF]"
+                >
+                  <ShieldCheck className="h-4 w-4" />
+                  Connect Google read-only
+                </button>
+                <a
+                  href="/api/connect/google/signals"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 px-5 py-3 text-sm font-semibold text-[#D7E7F5] transition hover:border-[#00D9FF]/50 hover:text-white"
+                >
+                  View mock signals
+                </a>
+              </div>
+              {googleMessage && <p className="mt-4 text-sm leading-6 text-[#FFD987]">{googleMessage}</p>}
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-[#0D1520] p-4">
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-sm font-semibold text-white">Adapter health</p>
+                <span className="rounded-full bg-white/5 px-3 py-1 text-xs font-semibold text-[#B0C9E0]">{googleHealth?.status ?? 'checking'}</span>
+              </div>
+              <p className="mt-3 text-sm leading-6 text-[#B0C9E0]">
+                {googleHealth?.configured ? 'Google OAuth environment is configured with read-only scopes.' : 'Mock connected state is active until Google OAuth environment variables are configured.'}
+              </p>
+              <div className="mt-4 space-y-2 text-xs leading-5 text-[#8FA3B8]">
+                {(googleHealth?.scopes ?? ['gmail.readonly', 'calendar.readonly']).map((scope) => <p key={scope}>{scope}</p>)}
+              </div>
+            </div>
+          </div>
+          <div className="mt-5 grid gap-4 lg:grid-cols-2">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+              <p className="text-sm font-semibold text-white">Supported Google signals</p>
+              <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                {googleSignalLabels.map((signal) => <span key={signal} className="rounded-xl bg-[#0D1520] px-3 py-2 text-sm text-[#D7E7F5]">{signal}</span>)}
+              </div>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm leading-6 text-[#B0C9E0]">
+              <p className="font-semibold text-white">What Atlas will not do</p>
+              <p className="mt-2">No sending, deleting, archiving, mark-read, calendar editing, event creation, auto-responding, account changes, or autonomous execution.</p>
             </div>
           </div>
         </section>

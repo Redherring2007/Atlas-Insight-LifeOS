@@ -6,6 +6,7 @@ export type ConnectorHealthStatus = 'healthy' | 'needs-review' | 'setup-required
 
 export type ConnectorSignalType =
   | 'meeting'
+  | 'meeting-change'
   | 'travel'
   | 'urgent-follow-up'
   | 'client-opportunity'
@@ -14,6 +15,7 @@ export type ConnectorSignalType =
   | 'operational-blocker'
   | 'risk-awareness'
   | 'personal-work-clash'
+  | 'deadline'
 
 export interface ProviderCapabilitySummary {
   canReviewSignals: boolean
