@@ -1,11 +1,12 @@
 'use client'
 
-import { ContactProfile } from '@/types'
+import { ContactProfileUi, LeadStatus } from '@/types'
 import { Trash2, Mail, Phone, MapPin, Zap } from 'lucide-react'
+import { asStringArray, displayDate } from '@/lib/display'
 
 interface ContactCardProps {
-  contact: ContactProfile
-  onUpdate: (contactId: string, updates: Partial<ContactProfile>) => void
+  contact: ContactProfileUi
+  onUpdate: (contactId: string, updates: Partial<ContactProfileUi>) => void
   onDelete: (contactId: string) => void
 }
 
@@ -16,29 +17,29 @@ const leadStatusColors = {
 }
 
 export function ContactCard({ contact, onUpdate, onDelete }: ContactCardProps) {
-  const tags = Array.isArray(contact.tags) ? contact.tags : (contact.tags as any)?.split(',').filter(Boolean) || []
-  
-  // Determine lead status based on trustLevel
-  const getLeadStatus = (level: number) => {
-    if (level <= 3) return 'cold'
-    if (level <= 7) return 'warm'
+  const tags = asStringArray(contact.tags)
+
+  const getLeadStatus = (level: number | null): LeadStatus => {
+    const safeLevel = level ?? 5
+    if (safeLevel <= 3) return 'cold'
+    if (safeLevel <= 7) return 'warm'
     return 'hot'
   }
-  
-  const status = getLeadStatus(contact.trustLevel || 5)
-  const statusConfig = leadStatusColors[status as keyof typeof leadStatusColors]
+
+  const status = getLeadStatus(contact.trustLevel)
+  const statusConfig = leadStatusColors[status]
 
   const cycleStatus = () => {
-    const statuses = ['cold', 'warm', 'hot']
+    const statuses: LeadStatus[] = ['cold', 'warm', 'hot']
     const currentIndex = statuses.indexOf(status)
     const nextIndex = (currentIndex + 1) % statuses.length
-    const trustMap = { cold: 2, warm: 5, hot: 9 }
-    onUpdate(contact.id, { trustLevel: trustMap[nextIndex as keyof typeof trustMap] })
+    const trustMap: Record<LeadStatus, number> = { cold: 2, warm: 5, hot: 9 }
+    const nextStatus = statuses[nextIndex]
+    onUpdate(contact.id, { trustLevel: trustMap[nextStatus] })
   }
 
   return (
     <div className="bg-gradient-to-br from-gray-700 to-gray-800 rounded-lg p-4 border border-gray-600 hover:border-gray-500 transition-all shadow-lg hover:shadow-xl">
-      {/* Header with status */}
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1">
           <h3 className="text-lg font-semibold text-white">{contact.name}</h3>
@@ -53,7 +54,6 @@ export function ContactCard({ contact, onUpdate, onDelete }: ContactCardProps) {
         </button>
       </div>
 
-      {/* Contact info */}
       <div className="space-y-2 mb-3 text-sm">
         {contact.email && (
           <div className="flex items-center space-x-2 text-gray-300 hover:text-white cursor-pointer">
@@ -67,23 +67,21 @@ export function ContactCard({ contact, onUpdate, onDelete }: ContactCardProps) {
             <span>{contact.phone}</span>
           </div>
         )}
-        {(contact as any).whereMet && (
+        {contact.whereMet && (
           <div className="flex items-center space-x-2 text-gray-300">
             <MapPin size={14} className="text-orange-400" />
-            <span>{(contact as any).whereMet}</span>
+            <span>{contact.whereMet}</span>
           </div>
         )}
       </div>
 
-      {/* Conversation points */}
-      {(contact as any).conversationPoints && (
+      {contact.conversationPoints && (
         <div className="mb-3 pb-3 border-b border-gray-600">
           <p className="text-xs text-gray-400 mb-2">Last Conversation:</p>
-          <p className="text-sm text-gray-300 italic">"{(contact as any).conversationPoints}"</p>
+          <p className="text-sm text-gray-300 italic">"{contact.conversationPoints}"</p>
         </div>
       )}
 
-      {/* Tags */}
       {tags.length > 0 && (
         <div className="flex flex-wrap gap-1 mb-3">
           {tags.map((tag, idx) => (
@@ -94,9 +92,8 @@ export function ContactCard({ contact, onUpdate, onDelete }: ContactCardProps) {
         </div>
       )}
 
-      {/* Meta info */}
       <div className="text-xs text-gray-500 flex items-center justify-between">
-        <span>Added {new Date(contact.createdAt).toLocaleDateString()}</span>
+        <span>Added {displayDate(contact.createdAt)}</span>
         <button
           onClick={() => onDelete(contact.id)}
           className="text-red-400 hover:text-red-300 transition-colors"
