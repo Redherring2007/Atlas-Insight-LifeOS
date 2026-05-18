@@ -1,15 +1,30 @@
 'use client'
 
-import { Task } from '@/types'
+import { Task, TaskStatus } from '@/types'
+import { displayDate } from '@/lib/display'
 
 interface TaskCardProps {
   task: Task
   onUpdate: (taskId: string, updates: Partial<Task>) => void
 }
 
+const taskStatuses: TaskStatus[] = ['todo', 'in-progress', 'done']
+
+function normalizeTaskStatus(status: string | null): TaskStatus {
+  return taskStatuses.includes(status as TaskStatus) ? status as TaskStatus : 'todo'
+}
+
+function normalizePriority(priority: string | null) {
+  if (priority === 'high' || priority === 'medium' || priority === 'low') return priority
+  return 'medium'
+}
+
 export function TaskCard({ task, onUpdate }: TaskCardProps) {
-  const getStatusColor = (status: string) => {
-    switch (status) {
+  const status = normalizeTaskStatus(task.status)
+  const priority = normalizePriority(task.priority)
+
+  const getStatusColor = (value: TaskStatus) => {
+    switch (value) {
       case 'todo': return 'bg-gray-600'
       case 'in-progress': return 'bg-blue-600'
       case 'done': return 'bg-green-600'
@@ -17,8 +32,8 @@ export function TaskCard({ task, onUpdate }: TaskCardProps) {
     }
   }
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
+  const getPriorityColor = (value: string) => {
+    switch (value) {
       case 'high': return 'text-red-400'
       case 'medium': return 'text-yellow-400'
       case 'low': return 'text-green-400'
@@ -26,8 +41,8 @@ export function TaskCard({ task, onUpdate }: TaskCardProps) {
     }
   }
 
-  const handleStatusChange = (newStatus: string) => {
-    onUpdate(task.id, { status: newStatus as any })
+  const handleStatusChange = (newStatus: TaskStatus) => {
+    onUpdate(task.id, { status: newStatus })
   }
 
   return (
@@ -39,32 +54,31 @@ export function TaskCard({ task, onUpdate }: TaskCardProps) {
             <p className="text-gray-400 text-sm mb-3">{task.description}</p>
           )}
           <div className="flex items-center space-x-4 text-sm">
-            <span className={`font-medium ${getPriorityColor(task.priority)}`}>
-              {task.priority.toUpperCase()}
+            <span className={`font-medium ${getPriorityColor(priority)}`}>
+              {priority.toUpperCase()}
             </span>
             {task.dueDate && (
               <span className="text-gray-400">
-                Due: {task.dueDate.toLocaleDateString()}
+                Due: {displayDate(task.dueDate)}
               </span>
             )}
           </div>
         </div>
         <div className="flex items-center space-x-2">
           <select
-            value={task.status}
-            onChange={(e) => handleStatusChange(e.target.value)}
+            value={status}
+            onChange={(e) => handleStatusChange(e.target.value as TaskStatus)}
             className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-xs text-white"
           >
             <option value="todo">To Do</option>
             <option value="in-progress">In Progress</option>
             <option value="done">Done</option>
           </select>
-          <div className={`w-3 h-3 rounded-full ${getStatusColor(task.status)}`}></div>
+          <div className={`w-3 h-3 rounded-full ${getStatusColor(status)}`}></div>
         </div>
       </div>
 
-      {/* Progress indicator for in-progress tasks */}
-      {task.status === 'in-progress' && (
+      {status === 'in-progress' && (
         <div className="mb-4">
           <div className="flex justify-between text-sm text-gray-400 mb-1">
             <span>Progress</span>
@@ -76,7 +90,6 @@ export function TaskCard({ task, onUpdate }: TaskCardProps) {
         </div>
       )}
 
-      {/* Action buttons */}
       <div className="flex space-x-2">
         <button className="text-blue-400 hover:text-blue-300 text-sm">
           Edit
