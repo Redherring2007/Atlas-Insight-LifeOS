@@ -4,29 +4,30 @@ Current repo:
 Atlas-Insight-LifeOS
 
 Current branch:
-chore/repo-cleanup-atlas-only
+feature/read-only-connectors-foundation
 
 Current purpose:
 Main ATLAS LifeOS shell for operational intelligence across business and personal life management.
 
 Current stage:
-Repository cleanup and Atlas-only audit.
+Read-Only Universal Connector Foundation.
 
 Current status:
-- Current shell files are retained: Home, Ask Atlas, Command Queue, Modules, Settings.
-- Atlas Brain and Operational Context Engine files are retained.
-- Useful module/internal prototype routes are retained for future product decisions.
-- Stale duplicate AI routes, automation builder routes, connected-systems/trading-bot language, private command workspace, offline claims, and duplicate `/team` alias were removed.
-- `CLEANUP_AUDIT.md` records keep, legacy/internal, archive, remove, route cleanup, doc cleanup, and generated-file decisions.
-- `.gitignore` includes `.next`, `node_modules`, `tsconfig.tsbuildinfo`, `.env`, `.env.local`, debug logs, `263`, and temporary file patterns.
+- Atlas Connect foundation exists under `src/lib/connectors` with provider-neutral types, detection heuristics, read-only capability summaries, connection health helpers, mock connected accounts, and signal extraction summaries.
+- `/connect` is the current Atlas Connect setup surface for approved read-only email/calendar account signal preparation.
+- Modules now routes Atlas Connect to `/connect`.
+- Operational Context Engine and Daily Brief can consume connector signal summaries.
+- Atlas Brain fallback Command Queue suggestions include connector-aware proposed actions while preserving approval-only behaviour.
+- No production OAuth, credential storage, token refresh, live inbox/calendar sync, write access, or external automation exists in this phase.
 
 Current known issues:
 - Local shell execution is unavailable in this environment, so required TypeScript/build validation still needs to run in a working local or CI environment.
-- Some legacy/internal routes remain intentionally and need future consolidation decisions.
-- No feature work, AI orchestration, module expansion, or UI redesign was performed.
+- Provider detection is heuristic only and does not perform DNS/MX lookup, OAuth discovery, autodiscover, or live account verification.
+- `/connect` uses mock connected accounts only and does not persist user setup state.
+- Production read-only connector implementation needs consent design, secure token storage, audit logging, provider-specific scopes, and privacy review.
 
 Current priority:
-Validate this cleanup branch and then use it as the cleaner Atlas-only baseline.
+Validate this connector foundation branch, then prepare the first real read-only provider implementation path.
 
 Immediate goal:
-Run `npx tsc --noEmit`, then `DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder" npm run build`, then smoke test the five current shell routes.
+Run `npx tsc --noEmit`, then `DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder" npm run build`, then smoke test `/connect`, `/modules`, `/ask-atlas`, and `/command-queue`.
