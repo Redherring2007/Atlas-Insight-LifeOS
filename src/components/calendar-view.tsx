@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { CalendarEvent } from '@/types'
+import { displayTime } from '@/lib/display'
 
 interface CalendarViewProps {
   currentDate: Date
@@ -10,7 +11,7 @@ interface CalendarViewProps {
   onEventCreate: (event: Omit<CalendarEvent, 'id' | 'createdAt' | 'updatedAt'>) => void
 }
 
-export function CalendarView({ currentDate, events, onDateChange, onEventCreate }: CalendarViewProps) {
+export function CalendarView({ currentDate, events }: CalendarViewProps) {
   const [viewMode, setViewMode] = useState<'month' | 'week' | 'day'>('week')
 
   const getDaysInMonth = (date: Date) => {
@@ -21,7 +22,7 @@ export function CalendarView({ currentDate, events, onDateChange, onEventCreate 
     return new Date(date.getFullYear(), date.getMonth(), 1).getDay()
   }
 
-  const getEventColor = (type: string) => {
+  const getEventColor = (type: string | null | undefined) => {
     switch (type) {
       case 'meeting': return 'bg-blue-600'
       case 'deadline': return 'bg-red-600'
@@ -30,20 +31,19 @@ export function CalendarView({ currentDate, events, onDateChange, onEventCreate 
     }
   }
 
-  const formatTime = (date: Date | undefined) => {
-    if (!date) return ''
-    return new Date(date).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+  const isSameCalendarDate = (value: Date | null, date: Date) => {
+    if (!value) return false
+
+    const eventDate = new Date(value)
+    return (
+      eventDate.getFullYear() === date.getFullYear() &&
+      eventDate.getMonth() === date.getMonth() &&
+      eventDate.getDate() === date.getDate()
+    )
   }
 
   const getEventsForDate = (date: Date) => {
-    return events.filter(event => {
-      const eventDate = new Date(event.start!)
-      return (
-        eventDate.getFullYear() === date.getFullYear() &&
-        eventDate.getMonth() === date.getMonth() &&
-        eventDate.getDate() === date.getDate()
-      )
-    })
+    return events.filter(event => isSameCalendarDate(event.start, date))
   }
 
   const monthView = () => {
@@ -51,12 +51,10 @@ export function CalendarView({ currentDate, events, onDateChange, onEventCreate 
     const firstDay = getFirstDayOfMonth(currentDate)
     const days = []
 
-    // Empty cells
     for (let i = 0; i < firstDay; i++) {
       days.push(null)
     }
 
-    // Days
     for (let i = 1; i <= daysInMonth; i++) {
       days.push(i)
     }
@@ -136,7 +134,6 @@ export function CalendarView({ currentDate, events, onDateChange, onEventCreate 
     return (
       <div className="bg-gray-800 rounded-lg border border-gray-700 overflow-x-auto">
         <div className="flex min-w-max">
-          {/* Time column */}
           <div className="w-16 border-r border-gray-700">
             <div className="h-12 border-b border-gray-700"></div>
             {hours.map(hour => (
@@ -146,10 +143,8 @@ export function CalendarView({ currentDate, events, onDateChange, onEventCreate 
             ))}
           </div>
 
-          {/* Days columns */}
           {weekDays.map((date, dateIndex) => (
             <div key={dateIndex} className="flex-1 border-r border-gray-700 min-w-32">
-              {/* Day header */}
               <div className="h-12 border-b border-gray-700 p-2 text-center">
                 <div className="text-xs text-gray-400">{date.toLocaleDateString('en-US', { weekday: 'short' })}</div>
                 <div className={`text-sm font-semibold ${date.toDateString() === new Date().toDateString() ? 'text-blue-400' : 'text-white'}`}>
@@ -157,10 +152,10 @@ export function CalendarView({ currentDate, events, onDateChange, onEventCreate 
                 </div>
               </div>
 
-              {/* Hours */}
               {hours.map(hour => {
                 const dayEvents = events.filter(event => {
-                  const eventDate = new Date(event.start!)
+                  if (!event.start) return false
+                  const eventDate = new Date(event.start)
                   return (
                     eventDate.getHours() === hour &&
                     eventDate.toDateString() === date.toDateString()
@@ -196,7 +191,6 @@ export function CalendarView({ currentDate, events, onDateChange, onEventCreate 
 
     return (
       <div className="grid grid-cols-3 gap-6">
-        {/* Main calendar */}
         <div className="col-span-2">
           <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
             <div className="mb-6 text-center">
@@ -208,7 +202,8 @@ export function CalendarView({ currentDate, events, onDateChange, onEventCreate 
             <div className="space-y-3">
               {hours.map(hour => {
                 const hourEvents = dayEvents.filter(event => {
-                  const eventDate = new Date(event.start!)
+                  if (!event.start) return false
+                  const eventDate = new Date(event.start)
                   return eventDate.getHours() === hour
                 })
 
@@ -225,7 +220,7 @@ export function CalendarView({ currentDate, events, onDateChange, onEventCreate 
                         >
                           <div className="font-semibold text-sm">{event.title}</div>
                           <div className="text-xs mt-1">
-                            {formatTime(event.start)} - {formatTime(event.end)}
+                            {displayTime(event.start)} - {displayTime(event.end)}
                           </div>
                         </div>
                       ))}
@@ -237,7 +232,6 @@ export function CalendarView({ currentDate, events, onDateChange, onEventCreate 
           </div>
         </div>
 
-        {/* Sidebar - Events list */}
         <div className="bg-gray-800 rounded-lg border border-gray-700 p-6 h-fit">
           <h3 className="text-lg font-semibold mb-4">Today's Events</h3>
           {dayEvents.length === 0 ? (
@@ -247,11 +241,11 @@ export function CalendarView({ currentDate, events, onDateChange, onEventCreate 
               {dayEvents.map(event => (
                 <div key={event.id} className="border border-gray-700 rounded p-3">
                   <div className={`inline-block px-2 py-1 rounded text-xs font-medium text-white mb-2 ${getEventColor(event.type)}`}>
-                    {event.type}
+                    {event.type ?? 'event'}
                   </div>
                   <p className="font-semibold text-white text-sm">{event.title}</p>
                   <p className="text-gray-400 text-xs mt-1">
-                    {formatTime(event.start)} - {formatTime(event.end)}
+                    {displayTime(event.start)} - {displayTime(event.end)}
                   </p>
                 </div>
               ))}
@@ -264,7 +258,6 @@ export function CalendarView({ currentDate, events, onDateChange, onEventCreate 
 
   return (
     <div className="w-full">
-      {/* View mode selector */}
       <div className="flex gap-2 mb-6">
         <button
           onClick={() => setViewMode('month')}
@@ -292,7 +285,6 @@ export function CalendarView({ currentDate, events, onDateChange, onEventCreate 
         </button>
       </div>
 
-      {/* Calendar display */}
       {viewMode === 'month' && monthView()}
       {viewMode === 'week' && weekView()}
       {viewMode === 'day' && dayView()}
