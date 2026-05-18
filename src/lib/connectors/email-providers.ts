@@ -1,8 +1,9 @@
-import type { ConnectionMethod, ProviderDetectionResult } from './types'
+import type { ConnectionMethod, ConnectorProviderType, ProviderDetectionResult } from './types'
 
 interface EmailProviderRule {
   provider: string
   domains: string[]
+  providerType: ConnectorProviderType
   connectionMethod: ConnectionMethod
   confidence: number
   setupNotes: string[]
@@ -13,38 +14,43 @@ export const emailProviderRules: EmailProviderRule[] = [
   {
     provider: 'Gmail / Google Workspace',
     domains: ['gmail.com', 'googlemail.com'],
+    providerType: 'email-calendar',
     connectionMethod: 'oauth-later',
     confidence: 0.96,
     setupNotes: ['Google OAuth read-only consent is the preferred future path.', 'Workspace domains may need admin approval later.'],
-    manualFallback: 'Use Gmail export or approved IMAP/app-password setup where permitted by the account owner.',
+    manualFallback: 'Use Gmail export, read-only ICS, or approved IMAP/app-password setup where permitted by the account owner.',
   },
   {
     provider: 'Microsoft 365 / Outlook / Exchange',
     domains: ['outlook.com', 'hotmail.com', 'live.com', 'msn.com'],
+    providerType: 'email-calendar',
     connectionMethod: 'oauth-later',
     confidence: 0.94,
     setupNotes: ['Microsoft OAuth read-only consent is the preferred future path.', 'Exchange tenant policy may require admin approval later.'],
-    manualFallback: 'Use approved Exchange/IMAP read-only setup where available.',
+    manualFallback: 'Use approved Exchange/IMAP read-only setup or read-only ICS where available.',
   },
   {
     provider: 'iCloud Mail',
     domains: ['icloud.com', 'me.com', 'mac.com'],
+    providerType: 'email-calendar',
     connectionMethod: 'app-password',
     confidence: 0.9,
     setupNotes: ['iCloud typically requires an app-specific password for mail access.', 'Calendar may use CalDAV in a later implementation.'],
-    manualFallback: 'Use app-specific password setup or manual signal import.',
+    manualFallback: 'Use app-specific password setup, CalDAV, read-only ICS, or manual signal import.',
   },
   {
     provider: 'Zoho Mail',
     domains: ['zoho.com', 'zohomail.com'],
+    providerType: 'email-calendar',
     connectionMethod: 'oauth-later',
     confidence: 0.88,
     setupNotes: ['Zoho OAuth read-only consent is the preferred future path.', 'Custom domains may need manual confirmation.'],
-    manualFallback: 'Use Zoho approved IMAP read-only setup or manual signal import.',
+    manualFallback: 'Use Zoho approved IMAP/CalDAV read-only setup or manual signal import.',
   },
   {
     provider: 'Yahoo Mail',
     domains: ['yahoo.com', 'ymail.com', 'rocketmail.com'],
+    providerType: 'email',
     connectionMethod: 'app-password',
     confidence: 0.88,
     setupNotes: ['Yahoo commonly requires app-password setup for mail clients.', 'OAuth can be evaluated later.'],
@@ -53,6 +59,7 @@ export const emailProviderRules: EmailProviderRule[] = [
   {
     provider: 'Proton Mail Bridge',
     domains: ['proton.me', 'protonmail.com', 'pm.me'],
+    providerType: 'email',
     connectionMethod: 'bridge',
     confidence: 0.9,
     setupNotes: ['Proton requires Bridge or approved manual export for local client access.', 'Atlas should not attempt direct mailbox access without user setup.'],
@@ -61,9 +68,11 @@ export const emailProviderRules: EmailProviderRule[] = [
 ]
 
 export function buildEmailProviderDetection(rule: EmailProviderRule): ProviderDetectionResult {
+  const calendarCopy = rule.providerType === 'email-calendar' ? ', calendar pressure, travel planning' : ''
+
   return {
     provider: rule.provider,
-    providerType: 'email',
+    providerType: rule.providerType,
     connectionMethod: rule.connectionMethod,
     confidence: rule.confidence,
     requiredSetupNotes: rule.setupNotes,
@@ -72,7 +81,7 @@ export function buildEmailProviderDetection(rule: EmailProviderRule): ProviderDe
       canReadMetadata: true,
       canReadBodiesLater: true,
       canWrite: false,
-      summary: 'Read-only signal review for meetings, urgent follow-ups, blockers, schedule pressure, and operational context. No sending, deleting, editing, or auto-responding.',
+      summary: `Read-only signal review for meetings, urgent follow-ups, blockers${calendarCopy}, schedule pressure, and operational context. No sending, deleting, editing, auto-responding, event creation, or account changes.`,
     },
     manualFallbackOption: rule.manualFallback,
   }
