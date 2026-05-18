@@ -1,7 +1,14 @@
 .next
 node_modules
+tsconfig.tsbuildinfo
 .env
 .env.local
-tsconfig.tsbuildinfo
-drizzle
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 *.log
+263
+*.tmp
+*.temp
+drizzle
