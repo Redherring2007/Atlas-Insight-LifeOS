@@ -29,7 +29,13 @@ function sanitizeCalendarEvent(event: NonNullable<GoogleCalendarEventsResponse['
 }
 
 export function extractGoogleCalendarReadonlySignals(events: GoogleCalendarEventMetadata[]): ConnectorSignal[] {
-  return events.flatMap((event) => mapGoogleCalendarEventToSignals(event))
+  const signals: ConnectorSignal[] = []
+
+  events.forEach((event) => {
+    signals.push(...mapGoogleCalendarEventToSignals(event))
+  })
+
+  return signals
 }
 
 export async function fetchGoogleCalendarReadonlySignals(accessToken: string, calendarId = 'primary', maxResults = 10): Promise<ConnectorSignal[]> {
