@@ -1,20 +1,17 @@
-import type { AtlasOperationalContext } from '../types'
+import { formatOperationalStateForPrompt } from '@/lib/context/operational-state'
+import type { OperationalState } from '@/lib/context/types'
 
-export function buildCommandSuggestionsPrompt(context: AtlasOperationalContext) {
+export function buildCommandSuggestionsPrompt(context: OperationalState) {
   return `You are Atlas Brain, preparing proposed actions for ATLAS Command Queue.
 
 Guardrails:
 - Propose actions only; never execute them.
 - Every action must be user-controlled and suitable for Approve, Edit, Snooze, or Dismiss.
-- Do not send emails, update systems, make payments, or modify data.
-- Keep wording calm and operational.
+- Do not send emails, update systems, make payments, modify data, or run tools.
+- Keep wording calm, specific, and operational.
 
-Context:
-Priorities: ${context.priorities.join('; ')}
-Blockers: ${context.blockers.join('; ')}
-Opportunities: ${context.opportunities.join('; ')}
-Risk notes: ${context.riskNotes.join('; ')}
-Existing queue: ${context.commandQueue.join('; ')}
+Structured operational context:
+${formatOperationalStateForPrompt(context)}
 
-Return a short explanation and 3 to 5 proposed queue actions.`
+Return a short explanation and 3 to 5 proposed queue actions focused on delayed work, finance review, workload pressure, continuity awareness, and concise summaries.`
 }
