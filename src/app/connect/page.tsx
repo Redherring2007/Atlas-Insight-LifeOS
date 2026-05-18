@@ -12,11 +12,21 @@ import { detectConnectorProvider } from '@/lib/connectors/provider-detection'
 import { signalsForAccount } from '@/lib/connectors/signal-extraction'
 import type { ProviderDetectionResult } from '@/lib/connectors/types'
 
+interface GoogleConnectedAccountPreview {
+  id: string
+  accountEmail: string | null
+  displayName: string | null
+  status: string | null
+  lastSignalSyncAt: string | null
+}
+
 interface GoogleHealthState {
   configured: boolean
   status: string
   scopes: string[]
   warnings: string[]
+  tokenEncryptionConfigured?: boolean
+  connectedAccounts?: GoogleConnectedAccountPreview[]
 }
 
 const signalLabels = [
@@ -58,6 +68,16 @@ function statusClass(status: string) {
   }
 }
 
+function googleStatusMessage(statusValue: string | null, detail: string | null) {
+  switch (statusValue) {
+    case 'connected': return 'Google Workspace read-only access is connected. Atlas can prepare approved operational signals.'
+    case 'encryption-required': return 'Google approved the connection, but token encryption is not configured. Set ATLAS_TOKEN_ENCRYPTION_KEY before storing tokens.'
+    case 'mock-safe': return 'Google callback reached Atlas, but setup is incomplete. Mock-safe mode remains active.'
+    case 'error': return `Google connection could not complete${detail ? `: ${detail}` : ''}. No token was stored.`
+    default: return ''
+  }
+}
+
 export default function ConnectPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
@@ -77,6 +97,12 @@ export default function ConnectPage() {
   useEffect(() => {
     setDetection(detectedResult)
   }, [detectedResult])
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const callbackMessage = googleStatusMessage(params.get('google'), params.get('detail'))
+    if (callbackMessage) setGoogleMessage(callbackMessage)
+  }, [])
 
   useEffect(() => {
     let active = true
@@ -115,6 +141,9 @@ export default function ConnectPage() {
     }
   }
 
+  const googleAccounts = googleHealth?.connectedAccounts ?? []
+  const firstGoogleAccount = googleAccounts[0]
+
   if (status === 'loading' || !session) {
     return <div className="min-h-screen bg-[#070B10] text-[#EAF2F8] flex items-center justify-center">Loading...</div>
   }
@@ -131,7 +160,7 @@ export default function ConnectPage() {
               <p className="text-xs uppercase tracking-[0.3em] text-[#00D9FF]">Atlas Connect</p>
               <h2 className="mt-3 max-w-3xl text-3xl font-semibold leading-tight text-white sm:text-4xl">Tell Atlas the account. Atlas identifies the safest read-only path.</h2>
               <p className="mt-4 max-w-3xl text-sm leading-6 text-[#B0C9E0]">
-                Atlas reviews approved connected accounts for operational signals only. This foundation prepares read-only email and calendar signals and never sends, deletes, edits, auto-responds, creates events, or changes account settings.
+                Atlas reviews approved connected accounts for operational signals only. This live flow prepares read-only email and calendar signals and never sends, deletes, edits, auto-responds, creates events, or changes account settings.
               </p>
             </div>
             <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm leading-6 text-[#B0C9E0]">
@@ -139,7 +168,7 @@ export default function ConnectPage() {
                 <LockKeyhole className="h-5 w-5 text-[#00D9FF]" />
                 <p className="font-semibold">Read-only first</p>
               </div>
-              <p className="mt-3">Google Workspace is the first real adapter path. Token persistence is intentionally not implemented in this pass.</p>
+              <p className="mt-3">Google Workspace tokens are stored only when encryption and database persistence are configured.</p>
             </div>
           </div>
         </section>
@@ -152,12 +181,12 @@ export default function ConnectPage() {
                   <Mail className="h-5 w-5" />
                 </div>
                 <div>
-                  <p className="text-xs uppercase tracking-[0.25em] text-[#00D9FF]">First adapter path</p>
+                  <p className="text-xs uppercase tracking-[0.25em] text-[#00D9FF]">Live adapter path</p>
                   <h3 className="mt-1 text-xl font-semibold text-white">Google Workspace read-only</h3>
                 </div>
               </div>
               <p className="mt-4 max-w-3xl text-sm leading-6 text-[#B0C9E0]">
-                Connect Gmail and Google Calendar later with read-only scopes so Atlas can prepare operational signals from approved account metadata, snippets, and calendar event metadata.
+                Connect Gmail and Google Calendar with read-only scopes so Atlas can prepare operational signals from approved account metadata, snippets, and calendar event metadata.
               </p>
               <div className="mt-5 flex flex-wrap gap-3">
                 <button
@@ -169,11 +198,18 @@ export default function ConnectPage() {
                   Connect Google read-only
                 </button>
                 <a
-                  href="/api/connect/google/signals"
+                  href={firstGoogleAccount ? `/api/connect/google/signals?connectedAccountId=${firstGoogleAccount.id}` : '/api/connect/google/signals'}
                   className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 px-5 py-3 text-sm font-semibold text-[#D7E7F5] transition hover:border-[#00D9FF]/50 hover:text-white"
                 >
-                  View mock signals
+                  {firstGoogleAccount ? 'Sync signal preview' : 'View mock signals'}
                 </a>
+                <button
+                  type="button"
+                  disabled
+                  className="inline-flex cursor-not-allowed items-center justify-center gap-2 rounded-xl border border-white/10 px-5 py-3 text-sm font-semibold text-[#6F8499]"
+                >
+                  Disconnect later
+                </button>
               </div>
               {googleMessage && <p className="mt-4 text-sm leading-6 text-[#FFD987]">{googleMessage}</p>}
             </div>
@@ -185,11 +221,28 @@ export default function ConnectPage() {
               <p className="mt-3 text-sm leading-6 text-[#B0C9E0]">
                 {googleHealth?.configured ? 'Google OAuth environment is configured with read-only scopes.' : 'Mock connected state is active until Google OAuth environment variables are configured.'}
               </p>
+              <p className="mt-2 text-sm leading-6 text-[#B0C9E0]">
+                {googleHealth?.tokenEncryptionConfigured ? 'Token encryption is configured.' : 'Token encryption key is required before live tokens can be stored.'}
+              </p>
               <div className="mt-4 space-y-2 text-xs leading-5 text-[#8FA3B8]">
                 {(googleHealth?.scopes ?? ['gmail.readonly', 'calendar.readonly']).map((scope) => <p key={scope}>{scope}</p>)}
               </div>
             </div>
           </div>
+          {googleAccounts.length > 0 && (
+            <div className="mt-5 rounded-2xl border border-white/10 bg-[#0D1520] p-4">
+              <p className="text-sm font-semibold text-white">Connected Google accounts</p>
+              <div className="mt-3 grid gap-3 lg:grid-cols-2">
+                {googleAccounts.map((account) => (
+                  <div key={account.id} className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-[#D7E7F5]">
+                    <p className="font-semibold text-white">{account.displayName ?? account.accountEmail ?? 'Google account'}</p>
+                    <p className="mt-1 text-[#8FA3B8]">{account.accountEmail ?? 'Email unavailable'} · {account.status ?? 'connected'}</p>
+                    <p className="mt-1 text-xs text-[#6F8499]">Last signal sync: {account.lastSignalSyncAt ?? 'Not synced yet'}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
           <div className="mt-5 grid gap-4 lg:grid-cols-2">
             <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
               <p className="text-sm font-semibold text-white">Supported Google signals</p>
@@ -199,7 +252,7 @@ export default function ConnectPage() {
             </div>
             <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm leading-6 text-[#B0C9E0]">
               <p className="font-semibold text-white">What Atlas will not do</p>
-              <p className="mt-2">No sending, deleting, archiving, mark-read, calendar editing, event creation, auto-responding, account changes, or autonomous execution.</p>
+              <p className="mt-2">No sending, deleting, archiving, mark-read, full body storage, attachment downloads, calendar editing, event creation, auto-responding, account changes, or autonomous execution.</p>
             </div>
           </div>
         </section>

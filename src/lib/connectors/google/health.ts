@@ -21,9 +21,10 @@ export function getGoogleReadonlyHealth() {
     warnings,
     safetyBoundary: [
       'Gmail readonly metadata and snippet signal extraction only.',
-      'Google Calendar readonly event signal extraction only.',
+      'Google Calendar readonly event metadata signal extraction only.',
+      'No full email body storage or attachment downloading.',
       'No sending, deleting, archiving, marking read, event creation, calendar editing, or account changes.',
-      'No token persistence in this foundation pass.',
+      'Tokens must be encrypted with ATLAS_TOKEN_ENCRYPTION_KEY before persistence.',
     ],
   }
 }
