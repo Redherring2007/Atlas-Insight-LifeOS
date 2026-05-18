@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-05-18 - Repository Cleanup and Atlas-only Audit
+- Added `CLEANUP_AUDIT.md` with keep, legacy/internal, archive, remove, and future-decision classifications.
+- Removed stale duplicate AI routes `/brain` and `/ai-brain` now superseded by Ask Atlas and Atlas Brain service layer.
+- Removed stale automation builder route and components that conflicted with approval-only Command Queue direction.
+- Removed superseded connected-systems route and trading-bot/OSINT/Sargassum integration language now covered by Modules / Atlas Connect strategy.
+- Removed stale private/offline routes and duplicate `/team` alias.
+- Tightened `.gitignore` for debug logs, temporary artifacts, and generated files.
+
 ## 2026-05-18 - Context Awareness Foundation
 - Added structured context layer under `src/lib/context` for tasks, projects, command queue, finance, calendar, risk, priorities, focus analysis, daily brief, and operational state.
 - Added Operational State Engine to aggregate workload pressure, focus pressure, approval load, finance pressure, resilience awareness, blockers, opportunities, and risk indicators.
