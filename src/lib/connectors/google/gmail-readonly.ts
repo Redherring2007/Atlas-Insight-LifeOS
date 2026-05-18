@@ -34,7 +34,13 @@ export function sanitizeGmailMessage(message: GmailMessageResponse): GoogleGmail
 }
 
 export function extractGmailReadonlySignals(messages: GoogleGmailMessageMetadata[]): ConnectorSignal[] {
-  return messages.flatMap((message) => mapGmailMetadataToSignals(message))
+  const signals: ConnectorSignal[] = []
+
+  messages.forEach((message) => {
+    signals.push(...mapGmailMetadataToSignals(message))
+  })
+
+  return signals
 }
 
 export async function fetchGmailReadonlySignals(accessToken: string, maxResults = 10): Promise<ConnectorSignal[]> {
