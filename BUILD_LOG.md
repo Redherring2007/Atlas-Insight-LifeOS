@@ -1,5 +1,94 @@
 # Atlas LifeOS Build Log
 
+## Stage: Read-Only Universal Connector Foundation
+Date/time: 2026-05-18 18:05 Asia/Dubai
+Branch: feature/read-only-connectors-foundation
+
+### Files Created
+- `src/lib/connectors/types.ts`
+- `src/lib/connectors/provider-detection.ts`
+- `src/lib/connectors/email-providers.ts`
+- `src/lib/connectors/calendar-providers.ts`
+- `src/lib/connectors/connection-health.ts`
+- `src/lib/connectors/signal-extraction.ts`
+- `src/lib/connectors/mock-connected-accounts.ts`
+- `src/lib/connectors/index.ts`
+- `src/app/connect/page.tsx`
+
+### Files Changed
+- `src/app/modules/page.tsx`
+- `src/lib/context/types.ts`
+- `src/lib/context/operational-state.ts`
+- `src/lib/context/daily-brief.ts`
+- `src/lib/ai/atlas-brain.ts`
+- `BUILD_LOG.md`
+- `BUILD_STATE.md`
+- `CHANGELOG.md`
+- `QA.md`
+- `BUILD_STATUS.md`
+
+### Database / Schema / Migration Changes
+- No database schema or migration changes.
+- No OAuth tables, credential storage, token storage, or account sync jobs added.
+- No live inbox, mailbox, calendar, IMAP, CalDAV, ICS, Google, Microsoft, iCloud, Zoho, Yahoo, or Proton connection is executed in this phase.
+- No email sending, calendar editing, event creation, deletion, automatic replies, payments, external automation, or account changes added.
+
+### Routes / Screens / Components Changed
+- `/connect`: added a current Atlas Connect surface for read-only provider detection, permission explanation, mock connected accounts, connection health, and operational signals.
+- `/modules`: updated Atlas Connect module card to point to `/connect` and describe read-only approved account signal review.
+- Operational Context Engine: now includes optional connector signal summaries.
+- Daily Brief flow: can include connector notes for meeting pressure, travel mentions, urgent follow-ups, calendar conflicts, and connector health warnings.
+- Atlas Brain command suggestion fallback: includes read-only connector-aware proposed actions while preserving user approval boundaries.
+
+### Key Decisions Made
+- Created provider-neutral connector contracts before any provider-specific OAuth implementation.
+- Used deterministic local heuristics for provider detection; no DNS/MX lookup or network autodiscovery is performed.
+- Positioned Gmail/Google Workspace as the likely first OAuth path, Microsoft 365 second, with generic IMAP/CalDAV/manual fallback paths documented in code.
+- Kept all connector data mocked and read-only.
+- Used trust-focused language: Atlas reviews approved connected accounts for operational signals such as meetings, travel, urgent follow-ups, blockers and schedule pressure.
+- Avoided wording that implies Atlas reads all email content.
+- Fed connector summaries into context and Daily Brief as calm operational signals rather than raw message/calendar dumps.
+- Kept Command Queue actions proposed and approval-only.
+
+### Tests / Checks Run
+- Read required docs: `ARCHITECTURE.md`, `MODULE_MAP.md`, `BUILD_LOG.md`, `BUILD_STATE.md`, `CHANGELOG.md`, `QA.md`, `BUILD_STATUS.md`.
+- Attempted `git status --short`.
+- Attempted `npx tsc --noEmit`.
+- Attempted `DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder" npm run build`.
+- Reviewed and updated branch files through the GitHub connector because local shell execution is unavailable.
+
+### Errors Encountered
+- Local shell execution still cannot start `/bin/bash`; validation commands failed before Git, TypeScript, Node, or Next.js could run with `No such file or directory (os error 2)`.
+- Browser QA could not run because the app cannot be launched from this environment.
+- Live provider smoke tests were intentionally not attempted because this phase is mock-only and read-only foundation work.
+
+### Fixes Applied
+- Added typed connector models for provider detection, read-only capabilities, connected accounts, connection health, and operational signals.
+- Added email provider heuristics for Gmail/Google Workspace, Microsoft 365/Outlook/Exchange, iCloud Mail, Zoho Mail, Yahoo, Proton Mail Bridge/manual, and Generic IMAP fallback.
+- Added calendar provider heuristics for Google Calendar, Microsoft 365/Outlook Calendar, iCloud/CalDAV, Generic CalDAV, and ICS feed fallback.
+- Added provider detection result shape with confidence score, setup notes, read-only capability summary, and manual fallback option.
+- Added mock connected accounts and signal extraction summary helpers.
+- Added `/connect` UI with Add connected account, provider confidence result, setup notes, safety boundary, connected account mocks, and supported signal types.
+- Integrated connector signal summary into the Operational State Engine and Daily Brief context.
+- Updated Atlas Brain fallback command suggestions with connector-aware proposed actions.
+
+### Known Issues
+- TypeScript and production build validation still need to run in a working local or CI environment.
+- `/connect` is a foundation shell using mock connected accounts only.
+- Provider detection is heuristic and does not perform MX lookup, OAuth discovery, or live account validation.
+- No persistence exists for connected account setup state.
+- Command Queue connector suggestions remain mock/proposed and do not execute external actions.
+
+### Remaining TODOs
+- Run `npx tsc --noEmit` in a working environment.
+- Run `DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder" npm run build` in a working environment.
+- Smoke test `/connect`, `/modules`, `/ask-atlas`, `/command-queue`, and Daily Brief once the app can run.
+- Add production OAuth only after read-only permission design, token storage, audit logging, and provider-specific privacy review are agreed.
+- Build Gmail/Google Workspace read-only implementation first, then Microsoft 365, then generic IMAP/CalDAV/manual fallback.
+
+### Exact Next Step
+Run TypeScript/build validation in CI or a working shell, then smoke test the `/connect` mock flow before adding any production OAuth or live connector adapters.
+
 ## Stage: Context Awareness Foundation
 Date/time: 2026-05-18 16:20 Asia/Dubai
 Branch: feature/context-awareness-foundation
