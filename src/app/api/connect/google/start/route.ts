@@ -17,23 +17,31 @@ export async function GET() {
     }, { status: 401 })
   }
 
-  const state = createSignedOAuthState('google', userId)
-  const start = buildGoogleAuthUrl(state)
-  const health = getGoogleReadonlyHealth()
+  try {
+    const state = createSignedOAuthState('google', userId)
+    const start = buildGoogleAuthUrl(state)
+    const health = getGoogleReadonlyHealth()
 
-  return NextResponse.json({
-    provider: 'Google Workspace',
-    authUrl: start.authUrl,
-    configured: start.configured,
-    scopes: start.scopes,
-    state: start.state,
-    setupNotes: start.setupNotes,
-    health,
-    safety: {
-      readOnly: true,
-      noWriteAccess: true,
-      noTokenLogging: true,
-      message: 'Atlas reviews approved connected accounts for operational signals only.',
-    },
-  })
+    return NextResponse.json({
+      provider: 'Google Workspace',
+      authUrl: start.authUrl,
+      configured: start.configured,
+      scopes: start.scopes,
+      state: start.state,
+      setupNotes: start.setupNotes,
+      health,
+      safety: {
+        readOnly: true,
+        noWriteAccess: true,
+        noTokenLogging: true,
+        message: 'Atlas reviews approved connected accounts for operational signals only.',
+      },
+    })
+  } catch {
+    return NextResponse.json({
+      provider: 'Google Workspace',
+      ok: false,
+      error: 'OAuth state signing is not configured. Set NEXTAUTH_SECRET before starting Google OAuth.',
+    }, { status: 500 })
+  }
 }
