@@ -30,6 +30,13 @@ export interface GoogleTokenExchangeResult {
   error?: string
 }
 
+export interface GoogleReadonlyProfile {
+  id: string
+  email?: string
+  name?: string
+  picture?: string
+}
+
 export interface GoogleGmailMessageMetadata {
   id: string
   threadId?: string
