@@ -4,31 +4,29 @@ Current repo:
 Atlas-Insight-LifeOS
 
 Current branch:
-feature/context-awareness-foundation
+chore/repo-cleanup-atlas-only
 
 Current purpose:
 Main ATLAS LifeOS shell for operational intelligence across business and personal life management.
 
 Current stage:
-Context Awareness Foundation.
+Repository cleanup and Atlas-only audit.
 
 Current status:
-- Structured operational context layer exists under `src/lib/context`.
-- Operational State Engine aggregates tasks, projects, command queue, finance, calendar, risk, priorities, focus analysis, and daily brief context.
-- Atlas Brain receives concise formatted operational context instead of raw placeholder arrays.
-- `/api/atlas-brain` builds operational state per request and returns a context snapshot for calm UI awareness.
-- Ask Atlas displays subtle context signals and keeps prompt/response flow approval-led.
-- Command Queue can request context-aware proposed actions while preserving Approve, Edit, Snooze, and Dismiss controls.
-- Atlas Risk copy is positioned around operational resilience and continuity awareness.
+- Current shell files are retained: Home, Ask Atlas, Command Queue, Modules, Settings.
+- Atlas Brain and Operational Context Engine files are retained.
+- Useful module/internal prototype routes are retained for future product decisions.
+- Stale duplicate AI routes, automation builder routes, connected-systems/trading-bot language, private command workspace, offline claims, and duplicate `/team` alias were removed.
+- `CLEANUP_AUDIT.md` records keep, legacy/internal, archive, remove, route cleanup, doc cleanup, and generated-file decisions.
+- `.gitignore` includes `.next`, `node_modules`, `tsconfig.tsbuildinfo`, `.env`, `.env.local`, debug logs, `263`, and temporary file patterns.
 
 Current known issues:
 - Local shell execution is unavailable in this environment, so required TypeScript/build validation still needs to run in a working local or CI environment.
-- Context data is mocked and summarised; no live module feeds are connected yet.
-- Local Ollama smoke testing could not run from this environment.
-- No autonomous agents, recursive orchestration, memory layer, external connectors, tool execution, email sending, payments, or automatic database writes have been built.
+- Some legacy/internal routes remain intentionally and need future consolidation decisions.
+- No feature work, AI orchestration, module expansion, or UI redesign was performed.
 
 Current priority:
-Validate TypeScript/build and smoke test context-aware Atlas Brain responses before connecting any read-only live context adapters.
+Validate this cleanup branch and then use it as the cleaner Atlas-only baseline.
 
 Immediate goal:
-Run `npx tsc --noEmit`, then `DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder" npm run build`, then smoke test `POST /api/atlas-brain` with Ollama running and `ATLAS_BRAIN_MODEL=atlas-brain`.
+Run `npx tsc --noEmit`, then `DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder" npm run build`, then smoke test the five current shell routes.
