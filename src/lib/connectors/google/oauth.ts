@@ -116,5 +116,3 @@ export async function refreshGoogleAccessToken(refreshToken: string): Promise<Go
     refresh_token: refreshToken,
   }))
 }
-
-export { getGoogleReadonlyScopes } from './config'
