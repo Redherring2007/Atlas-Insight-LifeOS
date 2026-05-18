@@ -2,16 +2,16 @@
 
 import { useState } from 'react'
 import { X, Send } from 'lucide-react'
-import { NewTeamHandoff } from '@/types'
+import { TeamHandoffUi } from '@/types'
 
 interface CreateHandoffModalProps {
   isOpen: boolean
   onClose: () => void
-  onSubmit: (handoff: Omit<NewTeamHandoff, 'id' | 'createdAt' | 'updatedAt'>) => void
+  onSubmit: (handoff: Omit<TeamHandoffUi, 'id' | 'createdAt' | 'updatedAt'>) => void
   workspaceId: string
   currentUserId: string
   teamMembers: Array<{ id: string; name: string; email: string }>
-  availableTasks: Array<{ id: string; title: string; priority: string; dueDate?: Date }>
+  availableTasks: Array<{ id: string; title: string; priority: string | null; dueDate?: Date | null }>
 }
 
 export function CreateHandoffModal({
@@ -43,6 +43,7 @@ export function CreateHandoffModal({
     }
 
     const selectedTask = availableTasks.find(t => t.id === formData.taskId)
+    const selectedMember = teamMembers.find(m => m.id === formData.toUserId)
     if (!selectedTask) return
 
     onSubmit({
@@ -52,10 +53,12 @@ export function CreateHandoffModal({
       toUserId: formData.toUserId,
       status: 'pending',
       notes: formData.notes.trim() || null,
+      fromUser: 'You',
+      toUser: selectedMember?.name ?? 'Unknown',
       taskTitle: selectedTask.title,
-      priority: selectedTask.priority,
-      dueDate: selectedTask.dueDate,
-    } as any)
+      priority: selectedTask.priority ?? 'medium',
+      dueDate: selectedTask.dueDate ?? null,
+    })
 
     setFormData({
       taskId: '',
@@ -70,9 +73,8 @@ export function CreateHandoffModal({
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-gray-800 rounded-lg border border-gray-700 shadow-xl max-w-md w-full mx-4">
-        {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-700 bg-gray-750">
-          <h2 className="text-lg font-semibold text-white">👥 Delegate Task</h2>
+          <h2 className="text-lg font-semibold text-white">Delegate Task</h2>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-white transition-colors"
@@ -81,9 +83,7 @@ export function CreateHandoffModal({
           </button>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="p-4 space-y-4">
-          {/* Task Selection */}
           <div>
             <label className="text-xs font-semibold text-gray-300 mb-2 block">
               Select Task to Delegate
@@ -97,13 +97,12 @@ export function CreateHandoffModal({
               <option value="">Choose a task...</option>
               {availableTasks.map(task => (
                 <option key={task.id} value={task.id}>
-                  {task.title} ({task.priority})
+                  {task.title} ({task.priority ?? 'medium'})
                 </option>
               ))}
             </select>
           </div>
 
-          {/* Team Member Selection */}
           <div>
             <label className="text-xs font-semibold text-gray-300 mb-2 block">
               Delegate To
@@ -123,7 +122,6 @@ export function CreateHandoffModal({
             </select>
           </div>
 
-          {/* Notes */}
           <div>
             <label className="text-xs font-semibold text-gray-300 mb-2 block">
               Handover Notes (Optional)
@@ -138,7 +136,6 @@ export function CreateHandoffModal({
             />
           </div>
 
-          {/* Actions */}
           <div className="flex gap-2 pt-4 border-t border-gray-700">
             <button
               type="button"
