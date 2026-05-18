@@ -1,27 +1,29 @@
 # Atlas LifeOS Build State
 
-Stage: Atlas Brain Integration Foundation
-Date/time: 2026-05-18 15:00 Asia/Dubai
-Branch: feature/atlas-brain-integration-foundation
-Status: Atlas Brain foundation changes prepared on GitHub branch; validation blocked by unavailable local shell.
+Stage: Context Awareness Foundation
+Date/time: 2026-05-18 16:20 Asia/Dubai
+Branch: feature/context-awareness-foundation
+Status: Context awareness foundation prepared on GitHub branch; validation blocked by unavailable local shell.
 
 ## Current Purpose
-Create a clean, safe, future-ready Atlas Brain integration foundation that connects the LifeOS shell to local Ollama model architecture without autonomous execution.
+Make Atlas Brain operationally aware through structured, calm context summaries while avoiding autonomy, memory systems, recursive orchestration, external automation, and tool execution.
 
 ## Current Status
-- `feature/atlas-brain-integration-foundation` was created from latest `main`.
-- Atlas Brain service structure now exists under `src/lib/ai`.
-- Ollama provider defaults to `atlas-brain` and supports `OLLAMA_BASE_URL` plus `ATLAS_BRAIN_MODEL`.
-- `/api/atlas-brain` accepts controlled modes: `ask`, `daily_brief`, `command_suggestions`, `operational_summary`, and `focus`.
-- Ask Atlas submits prompts to the API, shows loading/live/fallback response state, and keeps suggestions approval-led.
-- Command Queue can request proposed Atlas Brain suggestions while keeping all actions user-controlled.
-- `.env.example` documents local build and Ollama variables.
-- `tsconfig.tsbuildinfo` has been removed from repository tracking and added to `.gitignore`.
+- `feature/context-awareness-foundation` was created from `feature/atlas-brain-integration-foundation` because this phase extends the Atlas Brain API/service layer.
+- Structured context builders now exist under `src/lib/context` for tasks, projects, command queue, finance, calendar, risk, priorities, focus analysis, daily brief, and operational state.
+- The Operational State Engine aggregates module summaries into one concise state object with workload pressure, focus pressure, approval load, finance pressure, resilience awareness, blockers, opportunities, and risk indicators.
+- Atlas Brain now receives formatted operational context instead of raw placeholder arrays.
+- Daily Brief prompts now use structured operational state and produce calm executive sections.
+- Ask Atlas surfaces subtle context signals after a response.
+- Command Queue suggestions use context-aware proposed actions while remaining approval-only.
+- Atlas Risk language has been refined toward operational resilience and continuity awareness.
 
 ## Current Blockers
-- Local shell execution is unavailable in this environment, so `git status --short`, `npx tsc --noEmit`, the production build command, and Ollama smoke testing could not execute.
+- Local shell execution is unavailable in this environment, so `git status --short`, `npx tsc --noEmit`, and the production build command could not execute.
+- Local visual QA and Ollama smoke testing could not run from this environment.
 
 ## Checks Run
+- Read required architecture, module map, build log, build state, changelog, QA, and build status docs from the branch base.
 - Attempted `git status --short`; blocked before shell startup.
 - Attempted `npx tsc --noEmit`; blocked before shell startup.
 - Attempted `DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder" npm run build`; blocked before shell startup.
@@ -31,13 +33,14 @@ Create a clean, safe, future-ready Atlas Brain integration foundation that conne
 - `git status --short`
 - `npx tsc --noEmit`
 - `DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder" npm run build`
-- Local smoke test with Ollama running and `ATLAS_BRAIN_MODEL=atlas-brain`.
+- Local smoke test of `/api/atlas-brain` with Ollama running.
+- Visual QA of `/ask-atlas`, `/command-queue`, and `/modules`.
 
 ## Known Risks
 - TypeScript or production build issues may remain until validation can run in a working environment.
-- Atlas Brain uses placeholder operational context only.
-- Suggested Command Queue actions are local UI state and do not persist.
-- Ollama availability is intentionally optional; fallback mode should be expected when local Ollama is not reachable.
+- Context builders use mock structured summaries only; no live database, calendar, email, finance, or CRM feeds are connected.
+- Operational context is intentionally non-persistent and not memory.
+- Command Queue AI suggestions are local UI state and do not execute or persist.
 
 ## Exact Next Step
-Run TypeScript and production build checks in a working local shell or CI, then smoke test `POST /api/atlas-brain` with Ollama running before any deeper orchestration work begins.
+Run the TypeScript and production build checks in a working local shell or CI, then smoke test Atlas Brain with context-aware prompts before replacing mock context builders with approved read-only data adapters.
