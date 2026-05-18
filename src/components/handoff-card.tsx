@@ -1,23 +1,29 @@
 'use client'
 
-import { TeamHandoff } from '@/types'
+import { HandoffStatus, TeamHandoffUi } from '@/types'
 import { User, Clock, CheckCircle, AlertCircle } from 'lucide-react'
+import { displayDate, displayString } from '@/lib/display'
 
 interface HandoffCardProps {
-  handoff: TeamHandoff
-  onUpdate: (handoffId: string, updates: Partial<TeamHandoff>) => void
+  handoff: TeamHandoffUi
+  onUpdate: (handoffId: string, updates: Partial<TeamHandoffUi>) => void
   onDelete: (handoffId: string) => void
 }
 
 const statusConfig = {
-  pending: { bg: 'bg-yellow-600', text: 'text-yellow-200', label: '⏳ Pending', icon: Clock },
-  accepted: { bg: 'bg-blue-600', text: 'text-blue-200', label: '✓ Accepted', icon: CheckCircle },
-  completed: { bg: 'bg-green-600', text: 'text-green-200', label: '✅ Completed', icon: CheckCircle },
-  rejected: { bg: 'bg-red-600', text: 'text-red-200', label: '❌ Rejected', icon: AlertCircle },
+  pending: { bg: 'bg-yellow-600', text: 'text-yellow-200', label: 'Pending', icon: Clock },
+  accepted: { bg: 'bg-blue-600', text: 'text-blue-200', label: 'Accepted', icon: CheckCircle },
+  completed: { bg: 'bg-green-600', text: 'text-green-200', label: 'Completed', icon: CheckCircle },
+  rejected: { bg: 'bg-red-600', text: 'text-red-200', label: 'Rejected', icon: AlertCircle },
+}
+
+function normalizeStatus(status: string | undefined): HandoffStatus {
+  if (status === 'accepted' || status === 'completed' || status === 'rejected') return status
+  return 'pending'
 }
 
 export function HandoffCard({ handoff, onUpdate, onDelete }: HandoffCardProps) {
-  const status = handoff.status as keyof typeof statusConfig
+  const status = normalizeStatus(handoff.status)
   const config = statusConfig[status]
   const Icon = config.icon
 
@@ -28,21 +34,21 @@ export function HandoffCard({ handoff, onUpdate, onDelete }: HandoffCardProps) {
           <div className="flex items-center space-x-2 mb-2">
             <User size={16} className="text-gray-400" />
             <span className="text-sm text-gray-400">From:</span>
-            <span className="text-white font-medium">{(handoff as any).fromUser}</span>
+            <span className="text-white font-medium">{displayString(handoff.fromUser, 'Unknown')}</span>
             <span className="text-gray-400">→</span>
-            <span className="text-white font-medium">{(handoff as any).toUser}</span>
+            <span className="text-white font-medium">{displayString(handoff.toUser, 'Unknown')}</span>
           </div>
-          <h3 className="text-lg font-semibold text-white">{(handoff as any).taskTitle}</h3>
-          {(handoff as any).notes && (
-            <p className="text-gray-400 text-sm mt-1">{(handoff as any).notes}</p>
+          <h3 className="text-lg font-semibold text-white">{displayString(handoff.taskTitle, 'Untitled task')}</h3>
+          {handoff.notes && (
+            <p className="text-gray-400 text-sm mt-1">{handoff.notes}</p>
           )}
         </div>
         <button
           onClick={() => {
-            const statuses = ['pending', 'accepted', 'completed', 'rejected']
+            const statuses: HandoffStatus[] = ['pending', 'accepted', 'completed', 'rejected']
             const currentIndex = statuses.indexOf(status)
             const nextIndex = (currentIndex + 1) % statuses.length
-            onUpdate(handoff.id, { status: statuses[nextIndex] as any })
+            onUpdate(handoff.id, { status: statuses[nextIndex] })
           }}
           className={`flex items-center space-x-1 px-3 py-1 rounded text-xs font-semibold whitespace-nowrap ${config.bg} ${config.text} hover:opacity-80 transition-opacity`}
         >
@@ -51,29 +57,27 @@ export function HandoffCard({ handoff, onUpdate, onDelete }: HandoffCardProps) {
         </button>
       </div>
 
-      {/* Task details */}
       <div className="grid grid-cols-2 gap-4 text-sm mb-3">
         <div>
           <span className="text-gray-400">Priority:</span>
           <span className={`ml-2 font-medium ${
-            (handoff as any).priority === 'high' ? 'text-red-400' :
-            (handoff as any).priority === 'medium' ? 'text-yellow-400' :
+            handoff.priority === 'high' ? 'text-red-400' :
+            handoff.priority === 'medium' ? 'text-yellow-400' :
             'text-green-400'
           }`}>
-            {(handoff as any).priority?.toUpperCase()}
+            {displayString(handoff.priority, 'medium').toUpperCase()}
           </span>
         </div>
         <div>
           <span className="text-gray-400">Due:</span>
           <span className="ml-2 text-white">
-            {(handoff as any).dueDate ? new Date((handoff as any).dueDate).toLocaleDateString() : 'No due date'}
+            {displayDate(handoff.dueDate)}
           </span>
         </div>
       </div>
 
-      {/* Meta info */}
       <div className="flex items-center justify-between text-xs text-gray-500 border-t border-gray-700 pt-3">
-        <span>Created {new Date(handoff.createdAt).toLocaleDateString()}</span>
+        <span>Created {displayDate(handoff.createdAt)}</span>
         <button
           onClick={() => onDelete(handoff.id)}
           className="text-red-400 hover:text-red-300 transition-colors"
