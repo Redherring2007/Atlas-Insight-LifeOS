@@ -3,7 +3,7 @@
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { Check, Clock3, Edit3, Mail, MinusCircle, ShieldCheck, WalletCards } from 'lucide-react'
+import { Check, Clock3, DollarSign, Edit3, Mail, MinusCircle, ShieldCheck } from 'lucide-react'
 import { BrandHeader } from '@/components/brand-header'
 import { SideNav } from '@/components/side-nav'
 
@@ -79,7 +79,7 @@ const initialQueue: QueueItem[] = [
 function itemIcon(type: QueueItem['icon']) {
   switch (type) {
     case 'email': return Mail
-    case 'finance': return WalletCards
+    case 'finance': return DollarSign
     case 'risk': return ShieldCheck
     default: return Check
   }
@@ -109,7 +109,7 @@ export default function CommandQueuePage() {
   return (
     <div className="min-h-screen bg-[#070B10] text-[#EAF2F8] md:flex">
       <SideNav />
-      <main className="flex-1 px-4 py-5 sm:px-6 lg:px-10 lg:py-8">
+      <main className="flex-1 px-4 py-5 pb-24 sm:px-6 lg:px-10 lg:py-8">
         <BrandHeader userName={session.user?.name ?? 'Operator'} workspaceLabel="Command Queue" />
 
         <section className="mt-6 rounded-3xl border border-white/10 bg-[#121C28]/85 p-5 shadow-[0_30px_80px_rgba(0,0,0,0.22)] backdrop-blur-xl sm:p-7">
