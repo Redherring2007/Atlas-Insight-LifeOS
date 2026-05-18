@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-05-18 - Context Awareness Foundation
+- Added structured context layer under `src/lib/context` for tasks, projects, command queue, finance, calendar, risk, priorities, focus analysis, daily brief, and operational state.
+- Added Operational State Engine to aggregate workload pressure, focus pressure, approval load, finance pressure, resilience awareness, blockers, opportunities, and risk indicators.
+- Updated Atlas Brain to receive concise operational context and return a UI-safe context snapshot.
+- Upgraded Daily Brief, focus analysis, operational summary, and command suggestion prompts to use structured context.
+- Updated Ask Atlas with subtle operational awareness signals after responses.
+- Updated Command Queue suggestions to use context-aware proposed actions while remaining approval-only.
+- Refined Atlas Risk module copy around operational resilience and continuity awareness.
+
 ## 2026-05-18 - Atlas Brain Integration Foundation
 - Added typed Atlas Brain service layer under `src/lib/ai` with config, request/response contracts, prompt builders, Ollama provider, and safe fallback handling.
 - Added `/api/atlas-brain` for controlled Ask Atlas modes: ask, daily brief, command suggestions, operational summary, and focus.
