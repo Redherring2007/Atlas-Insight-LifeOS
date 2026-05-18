@@ -1,6 +1,6 @@
 'use client'
 
-import { Trash2, Edit2, Toggle2 } from 'lucide-react'
+import { Trash2, Edit2, ToggleLeft } from 'lucide-react'
 
 interface RuleCardProps {
   rule: {
@@ -45,7 +45,7 @@ export function RuleCard({ rule, onEdit, onDelete, onToggle }: RuleCardProps) {
           className={`p-2 rounded-lg transition-colors ${rule.isActive ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-600'}`}
           title={rule.isActive ? 'Disable rule' : 'Enable rule'}
         >
-          <Toggle2 className="h-5 w-5" />
+          <ToggleLeft className="h-5 w-5" />
         </button>
       </div>
 

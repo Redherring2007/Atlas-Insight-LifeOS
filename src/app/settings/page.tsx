@@ -25,7 +25,7 @@ export default function SettingsPage() {
       <div className="flex">
         <SideNav />
         <main className="flex-1 px-6 py-8 xl:px-10">
-          <BrandHeader userName={session.user.name ?? 'Operator'} workspaceLabel="System settings and preferences" />
+          <BrandHeader userName={session.user?.name ?? 'Operator'} workspaceLabel="System settings and preferences" />
           <div className="mt-8 grid gap-8 lg:grid-cols-[1.5fr_0.9fr]">
             <section className="rounded-3xl border border-white/10 bg-[#121C28]/80 p-6 shadow-[0_30px_80px_rgba(0,0,0,0.25)] backdrop-blur-xl">
               <p className="text-xs uppercase tracking-[0.3em] text-[#00D9FF]">Settings</p>

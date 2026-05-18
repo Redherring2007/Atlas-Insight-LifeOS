@@ -26,7 +26,7 @@ export default function TeamAliasPage() {
       <div className="flex">
         <SideNav />
         <main className="flex-1 px-6 py-8 xl:px-10">
-          <BrandHeader userName={session.user.name ?? 'Operator'} workspaceLabel="Team access and collaboration" />
+          <BrandHeader userName={session.user?.name ?? 'Operator'} workspaceLabel="Team access and collaboration" />
           <div className="mt-8 rounded-3xl border border-white/10 bg-[#121C28]/80 p-8 shadow-[0_30px_80px_rgba(0,0,0,0.25)] backdrop-blur-xl">
             <p className="text-xs uppercase tracking-[0.3em] text-[#00D9FF]">Team Access</p>
             <h2 className="mt-3 text-3xl font-semibold text-[#EAF2F8]">Manage team roles and permission flow</h2>

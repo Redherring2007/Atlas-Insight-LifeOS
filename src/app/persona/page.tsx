@@ -47,7 +47,7 @@ export default function PersonaPage() {
       <div className="flex">
         <SideNav />
         <main className="flex-1 px-6 py-8 xl:px-10">
-          <BrandHeader userName={session.user.name ?? 'Operator'} workspaceLabel="Persona setup and profile" />
+          <BrandHeader userName={session.user?.name ?? 'Operator'} workspaceLabel="Persona setup and profile" />
           <div className="mt-8 grid gap-8 xl:grid-cols-[1.5fr_0.9fr]">
             <section className="space-y-6 rounded-3xl border border-white/10 bg-[#121C28]/80 p-6 shadow-[0_30px_80px_rgba(0,0,0,0.25)] backdrop-blur-xl">
               <div>

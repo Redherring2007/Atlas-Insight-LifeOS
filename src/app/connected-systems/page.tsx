@@ -11,28 +11,28 @@ import { useEffect } from 'react'
 const systems = [
   {
     id: 'atlas-insight',
-    name: 'ATLAS Insight',
+    title: 'ATLAS Insight',
     category: 'Intelligence / OSINT / risk signals',
     status: 'connected',
     description: 'External module for signals, risk scoring, and intelligence that feeds the command layer.'
   },
   {
     id: 'sargassum',
-    name: 'Sargassum System',
+    title: 'Sargassum System',
     category: 'Environmental tracking / routing',
     status: 'available',
     description: 'Connect tracking and routing data to build smarter operational choices.'
   },
   {
     id: 'trading-bot',
-    name: 'Trading Bot',
+    title: 'Trading Bot',
     category: 'Finance / signal intelligence',
     status: 'available',
     description: 'Link trading signals and finance insights while keeping control in ATLAS.'
   },
   {
     id: 'future-products',
-    name: 'Future Products',
+    title: 'Future Products',
     category: 'Plugin-ready ecosystem',
     status: 'disabled',
     description: 'Add future integrations without changing the core command hub.'
@@ -58,7 +58,7 @@ export default function ConnectedSystemsPage() {
       <div className="flex">
         <SideNav />
         <main className="flex-1 px-6 py-8 xl:px-10">
-          <BrandHeader userName={session.user.name ?? 'Operator'} workspaceLabel="Connected systems hub" />
+          <BrandHeader userName={session.user?.name ?? 'Operator'} workspaceLabel="Connected systems hub" />
           <div className="mt-8 grid gap-8 xl:grid-cols-[1.5fr_0.9fr]">
             <section className="space-y-6">
               <div className="rounded-3xl border border-white/10 bg-[#121C28]/80 p-6 shadow-[0_30px_80px_rgba(0,0,0,0.25)] backdrop-blur-xl">
