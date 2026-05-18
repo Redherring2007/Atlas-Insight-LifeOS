@@ -1,5 +1,95 @@
 # Atlas LifeOS Build Log
 
+## Stage: Context Awareness Foundation
+Date/time: 2026-05-18 16:20 Asia/Dubai
+Branch: feature/context-awareness-foundation
+
+### Files Created
+- `src/lib/context/types.ts`
+- `src/lib/context/tasks.ts`
+- `src/lib/context/projects.ts`
+- `src/lib/context/command-queue.ts`
+- `src/lib/context/finance.ts`
+- `src/lib/context/calendar.ts`
+- `src/lib/context/risk.ts`
+- `src/lib/context/operational-state.ts`
+- `src/lib/context/daily-brief.ts`
+- `src/lib/context/priorities.ts`
+- `src/lib/context/focus-analysis.ts`
+
+### Files Changed
+- `src/lib/ai/types.ts`
+- `src/lib/ai/atlas-brain.ts`
+- `src/lib/ai/prompts/daily-brief.ts`
+- `src/lib/ai/prompts/command-suggestions.ts`
+- `src/lib/ai/prompts/operational-summary.ts`
+- `src/lib/ai/prompts/focus-analysis.ts`
+- `src/app/api/atlas-brain/route.ts`
+- `src/app/ask-atlas/page.tsx`
+- `src/app/command-queue/page.tsx`
+- `src/app/modules/page.tsx`
+- `BUILD_LOG.md`
+- `BUILD_STATE.md`
+- `CHANGELOG.md`
+- `QA.md`
+- `BUILD_STATUS.md`
+
+### Database / Schema / Migration Changes
+- No database schema or migration changes.
+- No live data adapters connected.
+- No memory layer, autonomous agents, recursive orchestration, external automation, email/calendar execution, payments, tool execution, or automatic database writes added.
+
+### Routes / Screens / Components Changed
+- `/api/atlas-brain`: now builds an Operational State object and returns a UI-safe context snapshot.
+- `/ask-atlas`: now shows subtle operational awareness signals after Atlas responds.
+- `/command-queue`: now uses context-aware Atlas Brain suggestions while preserving approval-only controls.
+- `/modules`: refined Atlas Risk and Atlas Vault language.
+
+### Key Decisions Made
+- Created structured context builders that summarise state rather than dumping raw data.
+- Aggregated context through `buildOperationalState()` so Atlas Brain sees one calm operational picture.
+- Kept all context mocked and read-only for this phase.
+- Injected concise formatted context into Atlas Brain prompts instead of raw JSON.
+- Returned a small `contextSnapshot` to the UI for calm awareness signals.
+- Positioned Atlas Risk as operational resilience and continuity awareness.
+- Preserved user control through Command Queue for every suggested action.
+
+### Tests / Checks Run
+- Read required docs: `ARCHITECTURE.md`, `MODULE_MAP.md`, `BUILD_LOG.md`, `BUILD_STATE.md`, `CHANGELOG.md`, `QA.md`, `BUILD_STATUS.md`.
+- Attempted `git status --short`.
+- Attempted `npx tsc --noEmit`.
+- Attempted `DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder" npm run build`.
+- Reviewed branch changes through the GitHub connector.
+
+### Errors Encountered
+- Local shell execution still cannot start `/bin/bash`; each validation command failed before Git, TypeScript, Node, or Next.js could run with `No such file or directory (os error 2)`.
+- Local Ollama and browser smoke testing could not run for the same shell execution reason.
+- `feature/context-awareness-foundation` did not exist at the start of the pass, so it was created from `feature/atlas-brain-integration-foundation` to preserve the Atlas Brain foundation this phase extends.
+
+### Fixes Applied
+- Added context modules for tasks, projects, command queue, finance, calendar, risk, priorities, focus analysis, daily brief, and operational state.
+- Updated Atlas Brain request/response types to use structured operational state and return context snapshots.
+- Updated prompt builders to use concise operational state formatting.
+- Updated Daily Brief generation path to include priorities, blockers, finance/resilience awareness, queue recommendations, and next action.
+- Updated Ask Atlas with subtle context signals and calmer awareness copy.
+- Updated Command Queue to insert context-aware proposed actions.
+- Refined Atlas Risk and Vault module language.
+
+### Known Issues
+- TypeScript and production build validation still need to run in a working local or CI environment.
+- Context summaries are mocked and not connected to live module data.
+- Command Queue suggestions remain local UI state only.
+- No real Ollama smoke result is recorded from this environment.
+
+### Remaining TODOs
+- Run `npx tsc --noEmit` in a working environment.
+- Run `DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder" npm run build` in a working environment.
+- Smoke test `/api/atlas-brain` with local Ollama running and context-aware prompts.
+- Replace mock context builders with approved read-only adapters when the architecture is ready.
+
+### Exact Next Step
+Run TypeScript/build validation and Atlas Brain smoke tests in CI or a working local shell before connecting any live read-only context sources.
+
 ## Stage: Atlas Brain Integration Foundation
 Date/time: 2026-05-18 15:00 Asia/Dubai
 Branch: feature/atlas-brain-integration-foundation
