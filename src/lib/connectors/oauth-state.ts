@@ -39,28 +39,32 @@ export function createSignedOAuthState(provider: string, userId: string) {
 }
 
 export function verifySignedOAuthState(value: string | null, provider: string) {
-  if (!value) return { ok: false as const, error: 'Missing OAuth state.' }
+  try {
+    if (!value) return { ok: false as const, error: 'Missing OAuth state.' }
 
-  const [encoded, signature] = value.split('.')
-  if (!encoded || !signature) return { ok: false as const, error: 'OAuth state is malformed.' }
+    const [encoded, signature] = value.split('.')
+    if (!encoded || !signature) return { ok: false as const, error: 'OAuth state is malformed.' }
 
-  const expected = sign(encoded)
-  const suppliedBuffer = Buffer.from(signature)
-  const expectedBuffer = Buffer.from(expected)
+    const expected = sign(encoded)
+    const suppliedBuffer = Buffer.from(signature)
+    const expectedBuffer = Buffer.from(expected)
 
-  if (suppliedBuffer.length !== expectedBuffer.length || !timingSafeEqual(suppliedBuffer, expectedBuffer)) {
-    return { ok: false as const, error: 'OAuth state signature is invalid.' }
+    if (suppliedBuffer.length !== expectedBuffer.length || !timingSafeEqual(suppliedBuffer, expectedBuffer)) {
+      return { ok: false as const, error: 'OAuth state signature is invalid.' }
+    }
+
+    const payload = JSON.parse(decode(encoded)) as OAuthStatePayload
+
+    if (payload.provider !== provider) {
+      return { ok: false as const, error: 'OAuth state provider mismatch.' }
+    }
+
+    if (Date.now() - payload.createdAt > STATE_TTL_MS) {
+      return { ok: false as const, error: 'OAuth state has expired.' }
+    }
+
+    return { ok: true as const, payload }
+  } catch {
+    return { ok: false as const, error: 'OAuth state could not be verified.' }
   }
-
-  const payload = JSON.parse(decode(encoded)) as OAuthStatePayload
-
-  if (payload.provider !== provider) {
-    return { ok: false as const, error: 'OAuth state provider mismatch.' }
-  }
-
-  if (Date.now() - payload.createdAt > STATE_TTL_MS) {
-    return { ok: false as const, error: 'OAuth state has expired.' }
-  }
-
-  return { ok: true as const, payload }
 }
