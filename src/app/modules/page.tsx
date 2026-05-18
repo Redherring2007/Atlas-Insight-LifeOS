@@ -40,8 +40,8 @@ const modules = [
   },
   {
     name: 'Atlas Risk',
-    purpose: 'Operational resilience and awareness for business and life management.',
-    description: 'Future sections include business performance overview, risk and security overview, and personal/executive awareness.',
+    purpose: 'Operational resilience and continuity awareness.',
+    description: 'Future sections cover business continuity, operational disruption, workload pressure, travel awareness, and organisational bottlenecks in a calm way.',
     status: 'Planned' as ModuleStatus,
     href: '/modules',
     cta: 'View plan',
@@ -57,9 +57,9 @@ const modules = [
     icon: Landmark,
   },
   {
-    name: 'Atlas Archive',
-    purpose: 'Secure documents, memory, evidence, files and operational knowledge storage.',
-    description: 'A future knowledge layer for documents, records, and trusted operational context.',
+    name: 'Atlas Vault',
+    purpose: 'Secure documents, files and operational knowledge storage.',
+    description: 'A future knowledge layer for trusted records, evidence, documents, and structured operational context.',
     status: 'Planned' as ModuleStatus,
     href: '/modules',
     cta: 'View plan',
