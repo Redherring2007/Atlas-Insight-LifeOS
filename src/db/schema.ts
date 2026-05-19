@@ -253,3 +253,83 @@ export const connectedAccountSignals = pgTable('connected_account_signals', {
   metadataJson: jsonb('metadata_json'),
   createdAt: timestamp('created_at').defaultNow(),
 });
+
+export const twinProfiles = pgTable('twin_profiles', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id').references(() => users.id),
+  status: text('status').notNull().default('default'),
+  summary: text('summary'),
+  traitsJson: jsonb('traits_json').notNull().default({}),
+  scenarioResponsesJson: jsonb('scenario_responses_json').notNull().default([]),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+export const twinFeedbackEvents = pgTable('twin_feedback_events', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id').references(() => users.id),
+  twinProfileId: uuid('twin_profile_id').references(() => twinProfiles.id),
+  action: text('action').notNull(),
+  targetType: text('target_type').notNull(),
+  targetId: text('target_id').notNull(),
+  instruction: text('instruction'),
+  beforeText: text('before_text'),
+  afterText: text('after_text'),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+export const commandQueueActions = pgTable('command_queue_actions', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id').references(() => users.id),
+  actionType: text('action_type').notNull(),
+  section: text('section').notNull(),
+  title: text('title').notNull(),
+  context: text('context'),
+  proposedOutput: text('proposed_output'),
+  confidence: decimal('confidence', { precision: 3, scale: 2 }).default('0.50'),
+  urgency: text('urgency').notNull().default('medium'),
+  riskLevel: text('risk_level').notNull().default('low'),
+  sourceSignal: text('source_signal'),
+  suggestedNextStep: text('suggested_next_step'),
+  status: text('status').notNull().default('ready'),
+  metadataJson: jsonb('metadata_json').default({}),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+export const draftMessages = pgTable('draft_messages', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  commandQueueActionId: uuid('command_queue_action_id').references(() => commandQueueActions.id),
+  userId: uuid('user_id').references(() => users.id),
+  draftType: text('draft_type').notNull(),
+  recipientRef: text('recipient_ref'),
+  subject: text('subject'),
+  body: text('body').notNull(),
+  sourceSignal: text('source_signal'),
+  status: text('status').notNull().default('prepared'),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+export const scheduleSuggestions = pgTable('schedule_suggestions', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  commandQueueActionId: uuid('command_queue_action_id').references(() => commandQueueActions.id),
+  userId: uuid('user_id').references(() => users.id),
+  title: text('title').notNull(),
+  reason: text('reason'),
+  proposedWindow: text('proposed_window'),
+  confidence: decimal('confidence', { precision: 3, scale: 2 }).default('0.50'),
+  riskLevel: text('risk_level').notNull().default('low'),
+  status: text('status').notNull().default('proposed'),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+export const approvalActions = pgTable('approval_actions', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  commandQueueActionId: uuid('command_queue_action_id').references(() => commandQueueActions.id),
+  userId: uuid('user_id').references(() => users.id),
+  approvalEvent: text('approval_event').notNull(),
+  instruction: text('instruction'),
+  createdAt: timestamp('created_at').defaultNow(),
+});
