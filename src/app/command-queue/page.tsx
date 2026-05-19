@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { ArrowRight, Check, Clock3, Edit3, Mail, MinusCircle, RefreshCcw, Sparkles } from 'lucide-react'
+import { ArrowRight, Check, Clock3, Edit3, Mail, MinusCircle, RefreshCcw, Save, Sparkles } from 'lucide-react'
 import { BrandHeader } from '@/components/brand-header'
 import { SideNav } from '@/components/side-nav'
 import { createCommandQueueFeedback, groupPreparedActionsBySection, preparedCommandActions } from '@/lib/actions/command-queue'
@@ -101,7 +101,7 @@ export default function CommandQueuePage() {
             <div className="max-w-3xl">
               <p className="text-xs uppercase tracking-[0.3em] text-[#00D9FF]">Approval Layer</p>
               <h2 className="mt-3 text-3xl font-semibold leading-tight text-white sm:text-4xl">The work Atlas has prepared for you.</h2>
-              <p className="mt-4 text-sm leading-6 text-[#B0C9E0]">Atlas observes, understands, prepares, and suggests. You approve, edit, rewrite, regenerate, or dismiss before anything external can happen.</p>
+              <p className="mt-4 text-sm leading-6 text-[#B0C9E0]">Atlas observes, understands, prepares, and suggests. You approve, edit, rewrite, regenerate, save, or dismiss before anything external can happen.</p>
             </div>
             <div className="grid gap-3 sm:grid-cols-2 lg:w-[420px]">
               <div className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4">
@@ -145,6 +145,9 @@ export default function CommandQueuePage() {
                           <p>Signal: <span className="text-[#B0C9E0]">{action.sourceSignal}</span></p>
                         </div>
                         <p className="mt-3 text-sm leading-6 text-[#8FA3B8]">{action.suggestedNextStep}</p>
+                        {action.type === 'email_reply_draft' || action.type === 'email_outreach_draft' ? (
+                          <p className="mt-2 text-xs leading-5 text-[#8FA3B8]">Email send, save, and cancellation controls are review states in this foundation. No provider send route is connected yet.</p>
+                        ) : null}
                       </div>
 
                       <div className="flex flex-wrap gap-2 xl:w-72 xl:justify-end">
@@ -152,9 +155,17 @@ export default function CommandQueuePage() {
                           <Check className="h-4 w-4" /> Approve
                         </button>
                         {action.type === 'email_reply_draft' || action.type === 'email_outreach_draft' ? (
-                          <button onClick={() => updateActionStatus(action.id, 'approved', 'approve')} className="inline-flex items-center gap-2 rounded-xl border border-[#00AFFF]/40 px-4 py-2 text-sm font-semibold text-[#00D9FF] hover:border-[#00D9FF] hover:text-white">
-                            <Mail className="h-4 w-4" /> Approve & Send
-                          </button>
+                          <>
+                            <button onClick={() => updateActionStatus(action.id, 'approved', 'approve')} className="inline-flex items-center gap-2 rounded-xl border border-[#00AFFF]/40 px-4 py-2 text-sm font-semibold text-[#00D9FF] hover:border-[#00D9FF] hover:text-white">
+                              <Mail className="h-4 w-4" /> Approve & Send
+                            </button>
+                            <button onClick={() => updateActionStatus(action.id, 'saved_draft', 'save_draft')} className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-4 py-2 text-sm font-semibold text-[#B0C9E0] hover:border-[#00AFFF] hover:text-white">
+                              <Save className="h-4 w-4" /> Save draft
+                            </button>
+                            <button onClick={() => updateActionStatus(action.id, 'cancelled', 'cancel')} className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-4 py-2 text-sm font-semibold text-[#B0C9E0] hover:border-[#00AFFF] hover:text-white">
+                              Cancel
+                            </button>
+                          </>
                         ) : null}
                         <button onClick={() => updateActionStatus(action.id, 'edited', 'edit')} className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-4 py-2 text-sm font-semibold text-[#B0C9E0] hover:border-[#00AFFF] hover:text-white">
                           <Edit3 className="h-4 w-4" /> Edit
@@ -190,7 +201,7 @@ export default function CommandQueuePage() {
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <h3 className="text-lg font-semibold text-white">Learning loop</h3>
-              <p className="mt-2 text-sm leading-6 text-[#B0C9E0]">Approvals, edits, rewrites, regenerations, and dismissals are recorded as lightweight feedback signals for future draft quality. No vector memory or hidden execution is active.</p>
+              <p className="mt-2 text-sm leading-6 text-[#B0C9E0]">Approvals, edits, rewrites, regenerations, saves, cancellations, and dismissals are recorded as lightweight feedback signals for future draft quality. No vector memory or hidden execution is active.</p>
             </div>
             <div className="text-sm text-[#8FA3B8]">Recent feedback: {feedbackEvents.length}</div>
           </div>
