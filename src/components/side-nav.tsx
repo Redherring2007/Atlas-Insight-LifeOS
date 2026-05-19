@@ -2,12 +2,13 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Brain, CheckSquare, Grid3X3, Home, Settings } from 'lucide-react'
+import { Brain, CalendarDays, CheckSquare, Grid3X3, Home, Settings } from 'lucide-react'
 
 const navItems = [
   { href: '/dashboard', label: 'Home', mobileLabel: 'Home', icon: Home },
   { href: '/ask-atlas', label: 'Ask Atlas', mobileLabel: 'Ask', icon: Brain },
   { href: '/command-queue', label: 'Command Queue', mobileLabel: 'Queue', icon: CheckSquare },
+  { href: '/calendar', label: 'Calendar', mobileLabel: 'Calendar', icon: CalendarDays },
   { href: '/modules', label: 'Modules', mobileLabel: 'Modules', icon: Grid3X3 },
   { href: '/settings', label: 'Settings', mobileLabel: 'Settings', icon: Settings },
 ]
@@ -56,7 +57,7 @@ export function SideNav() {
       </aside>
 
       <nav className="fixed inset-x-3 bottom-3 z-40 rounded-3xl border border-white/10 bg-[#0F1620]/95 px-2 py-2 shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl md:hidden" aria-label="Mobile navigation">
-        <div className="grid grid-cols-5 gap-1">
+        <div className="grid grid-cols-6 gap-1">
           {navItems.map((item) => {
             const Icon = item.icon
             const isActive = isActivePath(item.href)
@@ -64,7 +65,7 @@ export function SideNav() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex min-h-14 flex-col items-center justify-center gap-1 rounded-2xl px-1 text-[11px] font-medium transition ${
+                className={`flex min-h-14 flex-col items-center justify-center gap-1 rounded-2xl px-1 text-[10px] font-medium transition ${
                   isActive ? 'bg-[#1B2B38] text-white' : 'text-[#B0C9E0]'
                 }`}
               >
