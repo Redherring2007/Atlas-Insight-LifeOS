@@ -35,9 +35,9 @@ const helpCards = [
     icon: FileText,
   },
   {
-    title: 'Stay resilient',
-    description: 'Keep continuity, workload pressure, finance timing, and personal/work friction visible without alarm.',
-    icon: ShieldCheck,
+    title: 'Match your style',
+    description: 'Use Digital Twin examples to prepare drafts and planning suggestions that sound closer to you.',
+    icon: Brain,
   },
 ]
 
@@ -114,12 +114,15 @@ export default function AskAtlasPage() {
               <p className="text-xs uppercase tracking-[0.3em] text-[#00D9FF]">Atlas Brain</p>
               <h2 className="mt-3 text-3xl font-semibold leading-tight text-white sm:text-4xl">Ask Atlas to turn operational noise into your next clear move.</h2>
               <p className="mt-4 text-sm leading-6 text-[#B0C9E0]">
-                Atlas Brain now works from structured operational context: priorities, blockers, approval load, finance pressure, resilience awareness, and focus pressure. You stay in control through Command Queue.
+                Atlas Brain works from structured operational context and can use your Digital Twin style profile when preparing drafts. You stay in control through Command Queue.
               </p>
             </div>
             <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm leading-6 text-[#B0C9E0] lg:max-w-sm">
               <p className="font-semibold text-white">Calm context, not noise</p>
               <p className="mt-2">Atlas summarises what matters and proposes next steps without watching, spamming, or executing actions.</p>
+              <Link href="/twin/setup" className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-[#00D9FF] hover:text-white">
+                Set up Digital Twin <ArrowRight className="h-4 w-4" />
+              </Link>
             </div>
           </div>
 
@@ -224,10 +227,10 @@ export default function AskAtlasPage() {
         <section className="mt-6 rounded-3xl border border-white/10 bg-[#111821]/90 p-5 sm:p-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-3">
-              <Brain className="h-5 w-5 text-[#00D9FF]" />
+              <ShieldCheck className="h-5 w-5 text-[#00D9FF]" />
               <div>
                 <h3 className="text-lg font-semibold text-white">Queue-ready outputs</h3>
-                <p className="mt-1 text-sm text-[#B0C9E0]">Draft actions should flow into Command Queue for review, edit, snooze, or approval.</p>
+                <p className="mt-1 text-sm text-[#B0C9E0]">Draft actions flow into Command Queue for review, edit, rewrite, regenerate, dismiss, or approval.</p>
               </div>
             </div>
             <Link href="/command-queue" className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-4 py-2 text-sm font-semibold text-[#00D9FF] hover:border-[#00AFFF] hover:text-white">
