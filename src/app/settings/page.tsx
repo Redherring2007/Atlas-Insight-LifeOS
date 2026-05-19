@@ -1,10 +1,12 @@
 'use client'
 
+import Link from 'next/link'
 import { BrandHeader } from '@/components/brand-header'
 import { SideNav } from '@/components/side-nav'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
+import { ArrowRight, Brain } from 'lucide-react'
 
 export default function SettingsPage() {
   const { data: session, status } = useSession()
@@ -24,7 +26,7 @@ export default function SettingsPage() {
     <div className="min-h-screen bg-[#070B10] text-[#EAF2F8]">
       <div className="flex">
         <SideNav />
-        <main className="flex-1 px-6 py-8 xl:px-10">
+        <main className="flex-1 px-6 py-8 pb-24 xl:px-10">
           <BrandHeader userName={session.user?.name ?? 'Operator'} workspaceLabel="System settings and preferences" />
           <div className="mt-8 grid gap-8 lg:grid-cols-[1.5fr_0.9fr]">
             <section className="rounded-3xl border border-white/10 bg-[#121C28]/80 p-6 shadow-[0_30px_80px_rgba(0,0,0,0.25)] backdrop-blur-xl">
@@ -47,6 +49,17 @@ export default function SettingsPage() {
               </div>
             </section>
             <aside className="space-y-6">
+              <div className="rounded-3xl border border-white/10 bg-[#121C28]/80 p-6 shadow-[0_30px_80px_rgba(0,0,0,0.25)] backdrop-blur-xl">
+                <div className="flex items-center gap-3">
+                  <Brain className="h-5 w-5 text-[#00D9FF]" />
+                  <p className="text-xs uppercase tracking-[0.3em] text-[#00D9FF]">Digital Twin</p>
+                </div>
+                <h3 className="mt-3 text-2xl font-semibold text-[#EAF2F8]">Communication and planning style</h3>
+                <p className="mt-4 text-sm leading-6 text-[#8FA3B8]">Teach Atlas how you write, decide, delegate, and protect focus time using practical examples. Drafts remain approval-gated.</p>
+                <Link href="/twin/setup" className="mt-5 inline-flex items-center gap-2 rounded-xl border border-[#00AFFF]/40 px-4 py-2 text-sm font-semibold text-[#00D9FF] hover:border-[#00D9FF] hover:text-white">
+                  Set up Twin <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
               <div className="rounded-3xl border border-white/10 bg-[#121C28]/80 p-6 shadow-[0_30px_80px_rgba(0,0,0,0.25)] backdrop-blur-xl">
                 <p className="text-xs uppercase tracking-[0.3em] text-[#00D9FF]">System notes</p>
                 <h3 className="mt-3 text-2xl font-semibold text-[#EAF2F8]">Command layer preferences</h3>
