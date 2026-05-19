@@ -1,45 +1,45 @@
 # Atlas LifeOS Build State
 
-Stage: Google OAuth Live Read-Only Connection
-Date/time: 2026-05-18 20:00 Asia/Dubai
-Branch: feature/google-oauth-live-connection
-Status: Safe live Google OAuth connection foundation prepared on GitHub branch; validation blocked by unavailable local shell.
+Stage: Digital Twin + Approval-Gated Command Queue Actions
+Date/time: 2026-05-19 12:00 Asia/Dubai
+Branch: feature/digital-twin-command-queue-actions
+Status: Foundation implemented on GitHub branch; local validation blocked by unavailable shell startup.
 
 ## Current Purpose
-Turn the Google Workspace read-only adapter foundation into a secure live connection flow with signed OAuth state, encrypted token persistence, and read-only Gmail/Calendar signal sync boundaries.
+Create the first Digital Twin and approval-gated work preparation foundation so Atlas can prepare drafts, schedule suggestions, meeting packs, follow-ups, and priority recommendations without autonomous execution.
 
 ## Current Status
-- Added migration plan and Drizzle schema entries for `connected_accounts` and `connected_account_signals`.
-- Added `ATLAS_TOKEN_ENCRYPTION_KEY` requirement for token persistence.
-- Added token encryption helpers using AES-256-GCM.
-- Added signed OAuth state helpers using `NEXTAUTH_SECRET` with expiry and user/provider binding.
-- Google OAuth callback now validates state, checks session user match, exchanges code, fetches Google profile, and stores encrypted tokens when persistence is available.
-- Google signal route can use a stored connected account id to decrypt the access token server-side and sync read-only signals.
-- `/connect` now shows live readiness, callback status, encryption readiness, connected account previews, and sync preview.
+- Added Digital Twin type contracts, scenario prompts, profile inference, lightweight adjustments, and feedback helpers.
+- Added `/twin/setup` with 10 scenario-based onboarding questions, defaults, progress, completion summary, and adjustment chips.
+- Added approval-gated action contracts for prepared Command Queue work.
+- Upgraded Command Queue around prepared work sections: Ready for approval, Needs your guidance, Draft replies, Suggested scheduling changes, Follow-up opportunities, and Priority recommendations.
+- Added mock email draft classification/reply helpers and rewrite/regenerate feedback paths.
+- Added Calendar as a top-level navigation item and rebuilt `/calendar` as a calm planning surface with Today, Upcoming, Deadline, Overdue, focus protection, meeting prep, and suggested schedule blocks.
+- Added lightweight scheduling engine helpers for workload density, focus windows, deadline risk, and approval-only suggestions.
+- Added migration plan and Drizzle schema entries for `twin_profiles`, `twin_feedback_events`, `command_queue_actions`, `draft_messages`, `schedule_suggestions`, and `approval_actions`.
 
 ## Current Blockers
 - Local shell execution is unavailable, so `git status --short`, `npx tsc --noEmit`, and the production build command could not execute.
-- Migration has not been applied from this environment.
-- Full OAuth browser flow cannot be tested here.
+- New migration has not been applied from this environment.
+- Feedback persistence is represented in schema/migration but UI feedback remains local/mock until a storage pass.
 
 ## Checks Run
-- Read all required docs and `.env.example`.
+- Read required docs and schema files through the GitHub connector.
 - Attempted required Git/TypeScript/build commands; blocked before shell startup.
-- Ran targeted GitHub searches for unsafe write scopes and forbidden wording.
 - Reviewed branch diff through the GitHub connector.
 
 ## Checks Still Required
 - `git status --short`
 - `npx tsc --noEmit`
 - `DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder" npm run build`
-- Apply `db/migrations/0001_connected_accounts.sql` in a safe DB.
-- Smoke test `/api/connect/google/start`, `/api/connect/google/callback`, `/api/connect/google/health`, and `/api/connect/google/signals`.
+- Apply `db/migrations/0002_twin_command_queue_actions.sql` in a safe development database.
+- Browser smoke test `/twin/setup`, `/command-queue`, `/calendar`, `/ask-atlas`, and `/settings`.
 
 ## Known Risks
-- OAuth state is signed and time-limited but not yet stored server-side for one-time replay prevention.
-- Token refresh is not yet fully wired into signal sync.
-- Disconnect/revoke is not implemented yet.
-- Demo user id may not satisfy DB foreign keys unless the demo user exists in the target database.
+- Digital Twin profile inference is deterministic and local for now; it is not persisted through the UI yet.
+- Command Queue actions are mock/prepared examples until backend persistence and provider execution are wired.
+- `Approve & Send` remains a UI state only in this phase; no provider send route is connected.
+- Scheduling suggestions do not edit external calendars and are not connected to real calendar writes.
 
 ## Exact Next Step
-Run validation in CI or a working local shell, apply the migration, configure Google OAuth read-only credentials and `ATLAS_TOKEN_ENCRYPTION_KEY`, then smoke test the live read-only connection flow end to end.
+Run TypeScript/build validation in a working shell or CI, apply the new migration in development, then wire authenticated persistence for Twin profiles and Command Queue feedback without adding autonomous execution.
