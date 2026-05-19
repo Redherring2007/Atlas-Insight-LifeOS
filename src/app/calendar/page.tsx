@@ -1,17 +1,46 @@
 'use client'
 
+import Link from 'next/link'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
-import { BrainIcon } from '@/components/brain-icon'
-import { CalendarView } from '@/components/calendar-view'
-import { CalendarEvent } from '@/types'
+import { useEffect } from 'react'
+import { ArrowRight, CalendarDays, Clock3, Focus, ListChecks, ShieldCheck } from 'lucide-react'
+import { BrandHeader } from '@/components/brand-header'
+import { SideNav } from '@/components/side-nav'
+import { buildCalendarPlanningState, planningBusyBlocks, planningTasks } from '@/lib/calendar/planning'
+import { analyseSchedule } from '@/lib/scheduling/engine'
+import type { PlanningFeedItem } from '@/lib/calendar/types'
+
+function pressureClass(pressure: PlanningFeedItem['pressure']) {
+  if (pressure === 'high') return 'text-[#FFD166] bg-[#FFD166]/10'
+  if (pressure === 'medium') return 'text-[#00D9FF] bg-[#00D9FF]/10'
+  return 'text-[#B0C9E0] bg-white/5'
+}
+
+function FeedList({ title, items }: { title: string; items: PlanningFeedItem[] }) {
+  return (
+    <section className="rounded-3xl border border-white/10 bg-[#111821]/90 p-5">
+      <h3 className="text-lg font-semibold text-white">{title}</h3>
+      <div className="mt-4 space-y-3">
+        {items.map((item) => (
+          <article key={item.id} className="rounded-2xl border border-white/10 bg-white/5 p-4">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <p className="text-sm font-semibold text-white">{item.title}</p>
+              <span className={`rounded-full px-3 py-1 text-xs ${pressureClass(item.pressure)}`}>{item.timeLabel}</span>
+            </div>
+            <p className="mt-2 text-sm leading-6 text-[#B0C9E0]">{item.detail}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+  )
+}
 
 export default function CalendarPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
-  const [events, setEvents] = useState<CalendarEvent[]>([])
-  const [currentDate, setCurrentDate] = useState(new Date())
+  const planning = buildCalendarPlanningState()
+  const analysis = analyseSchedule(planningBusyBlocks, planningTasks)
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -19,185 +48,92 @@ export default function CalendarPage() {
     }
   }, [status, router])
 
-  useEffect(() => {
-    if (session?.user) {
-      // Mock events - in real app, fetch from API
-      const mockEvents: CalendarEvent[] = [
-        {
-          id: '1',
-          workspaceId: '1',
-          userId: 'user-1',
-          title: 'Client Meeting - ABC Corp',
-          start: new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), 10, 0),
-          end: new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), 11, 0),
-          type: 'meeting',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-        {
-          id: '2',
-          workspaceId: '1',
-          userId: 'user-1',
-          title: 'Project Deadline - Website Redesign',
-          start: new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), 17, 0),
-          end: new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), 17, 0),
-          type: 'deadline',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-        {
-          id: '3',
-          workspaceId: '2',
-          userId: 'user-1',
-          title: 'Morning Workout',
-          start: new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), 7, 0),
-          end: new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), 8, 0),
-          type: 'personal',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-        {
-          id: '4',
-          workspaceId: '1',
-          userId: 'user-1',
-          title: 'Team Standup',
-          start: new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() + 1, 9, 0),
-          end: new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() + 1, 9, 30),
-          type: 'meeting',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-      ]
-      setEvents(mockEvents)
-    }
-  }, [session, currentDate])
-
-  const handleDateChange = (date: Date) => {
-    setCurrentDate(date)
-  }
-
-  const handleEventCreate = (event: Omit<CalendarEvent, 'id' | 'createdAt' | 'updatedAt'>) => {
-    const newEvent: CalendarEvent = {
-      ...event,
-      id: Date.now().toString(),
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    }
-    setEvents(prev => [...prev, newEvent])
-  }
-
-  if (status === 'loading') {
-    return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="text-white">Loading...</div>
-      </div>
-    )
-  }
-
-  if (!session) {
-    return null
+  if (status === 'loading' || !session) {
+    return <div className="min-h-screen bg-[#070B10] text-[#EAF2F8] flex items-center justify-center">Loading...</div>
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
-      {/* Header */}
-      <header className="border-b border-gray-800 px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <h1 className="text-2xl font-bold">Calendar</h1>
-            <BrainIcon isProcessing={false} size={32} />
-          </div>
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={() => handleDateChange(new Date(currentDate.getTime() - 7 * 24 * 60 * 60 * 1000))}
-              className="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded text-sm"
-            >
-              ‹ Week
-            </button>
-            <button
-              onClick={() => handleDateChange(new Date())}
-              className="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded text-sm"
-            >
-              Today
-            </button>
-            <button
-              onClick={() => handleDateChange(new Date(currentDate.getTime() + 7 * 24 * 60 * 60 * 1000))}
-              className="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded text-sm"
-            >
-              Week ›
-            </button>
-            <button className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md text-sm font-medium ml-4">
-              + New Event
-            </button>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen bg-[#070B10] text-[#EAF2F8] md:flex">
+      <SideNav />
+      <main className="flex-1 px-4 py-5 pb-24 sm:px-6 lg:px-10 lg:py-8">
+        <BrandHeader userName={session.user?.name ?? 'Operator'} workspaceLabel="Calendar" />
 
-      {/* Calendar View */}
-      <main className="px-6 py-8">
-        <CalendarView
-          currentDate={currentDate}
-          events={events}
-          onDateChange={handleDateChange}
-          onEventCreate={handleEventCreate}
-        />
+        <section className="mt-6 rounded-3xl border border-white/10 bg-[#121C28]/85 p-5 shadow-[0_30px_80px_rgba(0,0,0,0.22)] backdrop-blur-xl sm:p-7">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-3xl">
+              <p className="text-xs uppercase tracking-[0.3em] text-[#00D9FF]">Planning Layer</p>
+              <h2 className="mt-3 text-3xl font-semibold leading-tight text-white sm:text-4xl">A calmer view of time, pressure, and preparation.</h2>
+              <p className="mt-4 text-sm leading-6 text-[#B0C9E0]">Atlas can see deadline pressure, meeting density, unscheduled work, and focus windows. It prepares schedule suggestions for Command Queue; it does not edit your calendar without approval.</p>
+            </div>
+            <Link href="/command-queue" className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#00AFFF] px-4 py-3 text-sm font-semibold text-[#061019] transition hover:bg-[#00D9FF]">
+              Review schedule actions <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+
+          <div className="mt-6 grid gap-3 md:grid-cols-4">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+              <CalendarDays className="h-5 w-5 text-[#00D9FF]" />
+              <p className="mt-3 text-sm text-[#B0C9E0]">Workload density</p>
+              <p className="mt-1 text-2xl font-semibold capitalize text-white">{analysis.workloadDensity}</p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+              <Clock3 className="h-5 w-5 text-[#00D9FF]" />
+              <p className="mt-3 text-sm text-[#B0C9E0]">Focus windows</p>
+              <p className="mt-1 text-2xl font-semibold text-white">{analysis.focusWindows.length}</p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+              <ListChecks className="h-5 w-5 text-[#00D9FF]" />
+              <p className="mt-3 text-sm text-[#B0C9E0]">Deadline risks</p>
+              <p className="mt-1 text-2xl font-semibold text-white">{analysis.deadlineRisks.length}</p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+              <ShieldCheck className="h-5 w-5 text-[#00D9FF]" />
+              <p className="mt-3 text-sm text-[#B0C9E0]">Calendar writes</p>
+              <p className="mt-1 text-2xl font-semibold text-white">Approval only</p>
+            </div>
+          </div>
+        </section>
+
+        <section className="mt-6 grid gap-4 xl:grid-cols-2">
+          <FeedList title="Today" items={planning.today} />
+          <FeedList title="Upcoming" items={planning.upcoming} />
+          <FeedList title="Deadline feed" items={planning.deadlines} />
+          <FeedList title="Overdue feed" items={planning.overdue} />
+        </section>
+
+        <section className="mt-6 grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
+          <div className="rounded-3xl border border-white/10 bg-[#111821]/90 p-5">
+            <div className="flex items-center gap-3">
+              <Focus className="h-5 w-5 text-[#00D9FF]" />
+              <h3 className="text-lg font-semibold text-white">Suggested schedule blocks</h3>
+            </div>
+            <div className="mt-4 space-y-3">
+              {analysis.suggestions.map((suggestion) => (
+                <article key={suggestion.id} className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <p className="text-sm font-semibold text-white">{suggestion.title}</p>
+                    <span className="rounded-full bg-[#00D9FF]/10 px-3 py-1 text-xs text-[#00D9FF]">{Math.round(suggestion.confidence * 100)}% confidence</span>
+                  </div>
+                  <p className="mt-2 text-sm leading-6 text-[#B0C9E0]">{suggestion.reason}</p>
+                  <p className="mt-2 text-sm text-[#8FA3B8]">Window: {suggestion.proposedWindow}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+
+          <aside className="space-y-4">
+            <FeedList title="Unscheduled tasks" items={planning.unscheduledTasks} />
+            <section className="rounded-3xl border border-white/10 bg-[#111821]/90 p-5">
+              <h3 className="text-lg font-semibold text-white">Focus protection</h3>
+              <div className="mt-4 space-y-3">
+                {planning.focusProtection.concat(planning.meetingPrep).map((item) => (
+                  <p key={item} className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm leading-6 text-[#B0C9E0]">{item}</p>
+                ))}
+              </div>
+            </section>
+          </aside>
+        </section>
       </main>
-
-      {/* AI Suggestions Panel */}
-      <aside className="fixed right-0 top-20 bottom-0 w-80 bg-gray-800 border-l border-gray-700 p-6 hidden lg:block">
-        <h3 className="text-lg font-semibold mb-4">AI Suggestions</h3>
-        <div className="space-y-4">
-          <div className="bg-blue-900/20 border border-blue-700 rounded-lg p-4">
-            <h4 className="font-medium text-blue-400 mb-2">Schedule Optimization</h4>
-            <p className="text-sm text-gray-300">
-              Based on your patterns, moving the team standup to 10 AM would reduce conflicts by 40%.
-            </p>
-          </div>
-          <div className="bg-green-900/20 border border-green-700 rounded-lg p-4">
-            <h4 className="font-medium text-green-400 mb-2">Focus Block</h4>
-            <p className="text-sm text-gray-300">
-              Add a 2-hour focus block at 2 PM for deep work on the website redesign.
-            </p>
-          </div>
-          <div className="bg-purple-900/20 border border-purple-700 rounded-lg p-4">
-            <h4 className="font-medium text-purple-400 mb-2">Meeting Prep</h4>
-            <p className="text-sm text-gray-300">
-              Review ABC Corp contract before the 10 AM meeting.
-            </p>
-          </div>
-        </div>
-      </aside>
-
-      {/* Mobile Bottom Navigation */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-gray-800 border-t border-gray-700 px-4 py-2">
-        <div className="flex justify-around">
-          <button
-            onClick={() => router.push('/dashboard')}
-            className="flex flex-col items-center text-gray-400 hover:text-white"
-          >
-            <div className="w-6 h-6 bg-gray-400 rounded mb-1"></div>
-            <span className="text-xs">Dashboard</span>
-          </button>
-          <button
-            onClick={() => router.push('/tasks')}
-            className="flex flex-col items-center text-gray-400 hover:text-white"
-          >
-            <div className="w-6 h-6 bg-gray-400 rounded mb-1"></div>
-            <span className="text-xs">Tasks</span>
-          </button>
-          <button
-            onClick={() => router.push('/projects')}
-            className="flex flex-col items-center text-gray-400 hover:text-white"
-          >
-            <div className="w-6 h-6 bg-gray-400 rounded mb-1"></div>
-            <span className="text-xs">Projects</span>
-          </button>
-          <button className="flex flex-col items-center text-blue-400">
-            <div className="w-6 h-6 bg-blue-400 rounded mb-1"></div>
-            <span className="text-xs">Calendar</span>
-          </button>
-        </div>
-      </nav>
     </div>
   )
 }
