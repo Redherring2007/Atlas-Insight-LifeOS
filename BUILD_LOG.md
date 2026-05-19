@@ -1,26 +1,32 @@
 # Atlas LifeOS Build Log
 
-## Stage: Google OAuth Live Read-Only Connection
-Date/time: 2026-05-18 20:00 Asia/Dubai
-Branch: feature/google-oauth-live-connection
+## Stage: Digital Twin + Approval-Gated Command Queue Actions
+Date/time: 2026-05-19 12:00 Asia/Dubai
+Branch: feature/digital-twin-command-queue-actions
 
 ### Files Created
-- `db/migrations/0001_connected_accounts.sql`
-- `src/lib/connectors/token-crypto.ts`
-- `src/lib/connectors/oauth-state.ts`
-- `src/lib/connectors/connected-account-store.ts`
+- `db/migrations/0002_twin_command_queue_actions.sql`
+- `src/app/twin/setup/page.tsx`
+- `src/lib/twin/types.ts`
+- `src/lib/twin/profile.ts`
+- `src/lib/twin/prompts.ts`
+- `src/lib/twin/learning.ts`
+- `src/lib/twin/feedback.ts`
+- `src/lib/actions/types.ts`
+- `src/lib/actions/command-queue.ts`
+- `src/lib/actions/email-drafts.ts`
+- `src/lib/scheduling/types.ts`
+- `src/lib/scheduling/engine.ts`
+- `src/lib/calendar/types.ts`
+- `src/lib/calendar/planning.ts`
 
 ### Files Changed
-- `.env.example`
+- `src/components/side-nav.tsx`
+- `src/app/ask-atlas/page.tsx`
+- `src/app/command-queue/page.tsx`
+- `src/app/calendar/page.tsx`
+- `src/app/settings/page.tsx`
 - `src/db/schema.ts`
-- `src/app/api/connect/google/start/route.ts`
-- `src/app/api/connect/google/callback/route.ts`
-- `src/app/api/connect/google/health/route.ts`
-- `src/app/api/connect/google/signals/route.ts`
-- `src/app/connect/page.tsx`
-- `src/lib/connectors/google/types.ts`
-- `src/lib/connectors/google/oauth.ts`
-- `src/lib/connectors/google/health.ts`
 - `BUILD_LOG.md`
 - `BUILD_STATE.md`
 - `CHANGELOG.md`
@@ -28,61 +34,62 @@ Branch: feature/google-oauth-live-connection
 - `BUILD_STATUS.md`
 
 ### Database / Schema / Migration Changes
-- Added SQL migration plan for `connected_accounts` and `connected_account_signals`.
+- Added migration plan for `twin_profiles`.
+- Added migration plan for `twin_feedback_events`.
+- Added migration plan for `command_queue_actions`.
+- Added migration plan for `draft_messages`.
+- Added migration plan for `schedule_suggestions`.
+- Added migration plan for `approval_actions`.
 - Added matching Drizzle schema entries in `src/db/schema.ts`.
-- `connected_accounts` stores provider identity, account email, scopes, encrypted access/refresh tokens, token expiry, status, and sync timestamps.
-- `connected_account_signals` stores mapped operational signals only, not full email bodies or attachments.
-- Migration has not been executed from this environment because local shell execution is unavailable.
+- Migration has not been executed from this environment because local shell/database execution is unavailable.
 
 ### Routes / Screens / Components Changed
-- `/api/connect/google/start`: now requires signed-in user and creates a signed OAuth state token.
-- `/api/connect/google/callback`: validates signed state, checks session/user match, exchanges code, fetches Google profile, encrypts tokens, stores connected account, and redirects safely to `/connect`.
-- `/api/connect/google/health`: reports OAuth readiness, token encryption readiness, and stored Google connected account previews.
-- `/api/connect/google/signals`: can sync read-only signals from a stored encrypted account token or fall back to mock-safe signals.
-- `/connect`: now shows callback status, token encryption readiness, connected Google accounts, signal sync preview, and disconnect/revoke placeholder.
+- `/twin/setup`: new scenario-based Digital Twin onboarding flow with 10 practical examples, skip/default path, progress, completion summary, and adjustment chips.
+- `/command-queue`: upgraded from a generic action list into prepared work sections with approval-gated email drafts, scheduling suggestions, meeting pack, follow-up, and priority recommendations.
+- `/calendar`: rebuilt from the old prototype layout into a LifeOS planning surface with Today, Upcoming, Deadline, Overdue, unscheduled tasks, focus protection, meeting prep, workload density, and suggested schedule blocks.
+- `/ask-atlas`: added Digital Twin setup entry point and updated copy so Ask Atlas can prepare style-aware outputs while remaining approval-gated.
+- `/settings`: added Digital Twin setup entry point under AI behaviour/system preferences.
+- Primary navigation: added Calendar as a top-level item while preserving the dark LifeOS shell style.
 
 ### Key Decisions Made
-- Prioritised secure architecture over forcing a demo-only insecure connection.
-- Added AES-256-GCM token encryption backed by `ATLAS_TOKEN_ENCRYPTION_KEY`; missing key prevents token persistence.
-- Added signed OAuth state using `NEXTAUTH_SECRET` with timestamp, nonce, provider, and user id.
-- Required callback session user to match signed state user.
-- Never returns raw tokens to the client and does not log tokens.
-- Stored only operational signal summaries from Gmail metadata/snippets and Calendar metadata.
-- Kept disconnect/revoke as a placeholder because a safe revoke flow needs a separate implementation pass.
+- Kept the Digital Twin practical and operational rather than personality-label based.
+- Used 10 scenario responses to infer communication and planning traits without exposing psychological profiling language.
+- Kept Twin learning lightweight: approval/edit/rewrite/regenerate/dismiss feedback events only, with schema ready for later persistence.
+- Kept Command Queue as the only approval layer for prepared work.
+- Added `Approve & Send` as a UI review-state control only; no provider send route is connected in this phase.
+- Promoted Calendar to top-level navigation because scheduling is now a first-class operational system.
+- Added scheduling intelligence as suggestions only, with no calendar writes or external automation.
 
 ### Tests / Checks Run
-- Read required docs: `ARCHITECTURE.md`, `MODULE_MAP.md`, `CLEANUP_AUDIT.md`, `BUILD_LOG.md`, `BUILD_STATE.md`, `CHANGELOG.md`, `QA.md`, `BUILD_STATUS.md`, `.env.example`.
+- Read required docs: `ARCHITECTURE.md`, `MODULE_MAP.md`, `CLEANUP_AUDIT.md`, `BUILD_LOG.md`, `BUILD_STATE.md`, `CHANGELOG.md`, `QA.md`, `BUILD_STATUS.md`, `.env.example`, `neon/schema.sql`, and `db/migrations/0001_connected_accounts.sql`.
 - Attempted `git status --short`.
 - Attempted `npx tsc --noEmit`.
 - Attempted `DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder" npm run build`.
-- Reviewed branch diff and targeted searches through the GitHub connector.
+- Reviewed branch diff through the GitHub connector.
 
 ### Errors Encountered
 - Local shell execution still cannot start `/bin/bash`; validation commands failed before Git, TypeScript, Node, or Next.js could run with `No such file or directory (os error 2)`.
-- Browser QA and live Google OAuth smoke testing could not run from this environment.
-- `feature/google-oauth-live-connection` did not exist at the start, so it was created from `feature/google-workspace-readonly-adapter`.
+- Browser QA could not run from this environment.
 
 ### Fixes Applied
-- Added connected account persistence schema and migration plan.
-- Added token encryption/decryption helpers with fail-safe missing-key behaviour.
-- Added signed OAuth state helpers with expiry and constant-time signature comparison.
-- Updated Google OAuth start/callback to use signed state and encrypted persistence.
-- Updated Google health and signal routes to support stored connected accounts without exposing tokens.
-- Updated Connect UI and environment documentation for live readiness.
+- Removed the old calendar dependency on removed cleanup-era components by rebuilding `/calendar` with current shell components.
+- Added typed helpers for prepared actions, Twin profile guidance, scheduling suggestions, and email draft classification.
+- Added database migration/schema plan for persistence without wiring insecure or hidden execution.
+- Updated tracking docs to reflect the new phase and the validation blocker.
 
 ### Known Issues
 - TypeScript and production build validation still need to run in a working local or CI environment.
 - Migration has not been applied.
-- The OAuth state is signed and time-limited but not server-stored for one-time replay prevention yet.
-- Refresh-token rotation and expired-token refresh are not fully wired into signal sync yet.
-- Disconnect/revoke is a UI placeholder only.
+- Twin profile setup currently uses local UI state only; authenticated persistence is next.
+- Command Queue actions and email drafts are mock/prepared examples until persistence and provider execution review are wired.
+- No real sending, scheduling, or external mutation exists in this phase.
 
 ### Remaining TODOs
 - Run `npx tsc --noEmit` in a working environment.
 - Run `DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder" npm run build` in a working environment.
-- Apply the connected account migration in a safe database environment.
-- Smoke test Google OAuth locally with read-only scopes and a valid redirect URI.
-- Add token refresh, revoke/disconnect, audit trail, and one-time state storage before broader use.
+- Apply `db/migrations/0002_twin_command_queue_actions.sql` in a safe development database.
+- Persist Twin profiles and feedback events through authenticated API routes.
+- Persist Command Queue prepared actions and wire provider sends/calendar writes only after explicit approval architecture is in place.
 
 ### Exact Next Step
-Run validation and apply the migration in a controlled environment, then smoke test `/api/connect/google/start`, `/api/connect/google/callback`, `/api/connect/google/health`, and `/api/connect/google/signals` with read-only Google OAuth credentials.
+Run validation in CI or a working local shell, apply the new migration, then add authenticated persistence for `/twin/setup` and Command Queue feedback while preserving the approval-only execution boundary.
